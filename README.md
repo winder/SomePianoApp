@@ -1,42 +1,26 @@
 # RealTimePiano
 
-This Gluon Client sample was generated from https://start.gluon.io
+Configured according to
+https://openjfx.io/openjfx-docs/#maven
 
-## Basic Requirements
 
-A list of the basic requirements can be found online in the [Gluon Client documentation](https://docs.gluonhq.com/client/#_requirements).
+# Quickstart
+Download SDK and jmods:
+https://gluonhq.com/products/javafx/
 
-## Quick instructions
+Compile
+```
+~$ export PATH_TO_FX=/opt/java/javafx-sdk-14.0.2.1/lib
+~$ mvn compile
+```
 
-### Run the sample
+Run
+```
+~$ mvn javafx:run
+```
 
-    mvn javafx:run
-
-### Run the sample as a native image
-
-    mvn client:build client:run
-
-### Run the sample as a native android image
-
-    mvn -Ptarget=android client:build client:package client:install client:run
-
-### Run the sample as a native iOS image
-
-    mvn -Ptarget=ios client:build client:package client:install client:run
-
-## Selected features
-
-This is a list of all the features that were selected when creating the sample:
-
-### JavaFX 14.0.2.1 Modules
-
- - javafx-base
- - javafx-graphics
- - javafx-controls
-
-### Gluon Features
-
- - Attach display
- - Attach lifecycle
- - Attach statusbar
- - Attach storage
+Debug
+(saved as a run configuration with IntelliJ)
+```
+~$ mvn javafx:run@debug
+```

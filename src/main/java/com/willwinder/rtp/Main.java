@@ -1,4 +1,4 @@
-package com.willwinder.sample;
+package com.willwinder.rtp;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
