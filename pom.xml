@@ -13,11 +13,12 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>14</maven.compiler.release>
         <javafx.version>14.0.2.1</javafx.version>
         <javafx.plugin.version>0.0.4</javafx.plugin.version>
         <client.plugin.version>0.1.31</client.plugin.version>
         <attach.version>4.0.8</attach.version>
+        <jserialcomm.version>2.6.2</jserialcomm.version>
         <main.class>rtp/com.willwinder.rtp.Main</main.class>
     </properties>
 
@@ -38,6 +39,11 @@
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.fazecast</groupId>
+            <artifactId>jSerialComm</artifactId>
+            <version>${jserialcomm.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -46,6 +52,12 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
+                <configuration>
+                    <release>14</release>
+                    <compilerArgs>
+                        --enable-preview
+                    </compilerArgs>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.openjfx</groupId>
