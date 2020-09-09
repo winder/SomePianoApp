@@ -41,7 +41,7 @@ public class AnimationController extends AnimationTimer {
         //System.out.println("width: " + gc.getCanvas().getWidth());
 
         var MULT = 3.0;
-        var BLACK_KEY_WIDTH = 14 * MULT;
+        var BLACK_KEY_WIDTH = 12 * MULT;
         var WHITE_KEY_WIDTH = 23 * MULT;
         var KEY_HEIGHT = 100 * MULT;
         var CENTER_OFFSET = 125;
@@ -62,77 +62,77 @@ public class AnimationController extends AnimationTimer {
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.C_SHARP, CENTER_OFFSET + BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.C_SHARP, CENTER_OFFSET + WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("C#", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.D, CENTER_OFFSET + 2 * BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.D, CENTER_OFFSET + 2 * WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("D", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.D_SHARP, CENTER_OFFSET + 3 * BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.D_SHARP, CENTER_OFFSET + 3 * WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("D#", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.E, CENTER_OFFSET + 4 * BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.E, CENTER_OFFSET + 4 * WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("E", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.F, CENTER_OFFSET + 5 * BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.F, CENTER_OFFSET + 6 * WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("F", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.F_SHARP, CENTER_OFFSET + 6 * BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.F_SHARP, CENTER_OFFSET + 7 * WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("F#", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.G, CENTER_OFFSET + 7 * BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.G, CENTER_OFFSET + 8 * WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("G", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.G_SHARP, CENTER_OFFSET + 8 * BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.G_SHARP, CENTER_OFFSET + 9 * WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("G#", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.A, CENTER_OFFSET + 9 * BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.A, CENTER_OFFSET + 10 * WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("A", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.A_SHARP, CENTER_OFFSET + 10 * BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.A_SHARP, CENTER_OFFSET + 11 * WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("A#", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
         {
             Color c = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             gc.setFill(c);
-            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.B, CENTER_OFFSET + 11 * BLACK_KEY_WIDTH, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
+            var kp = KeyGraphicsUtils.pointsForKey(Key.Note.B, CENTER_OFFSET + 12 * WHITE_KEY_WIDTH_DIV_2, 200, KEY_HEIGHT, WHITE_KEY_WIDTH, BLACK_KEY_WIDTH, PADDING);
             printWidth("B", kp.xPoints());
             gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
         }
