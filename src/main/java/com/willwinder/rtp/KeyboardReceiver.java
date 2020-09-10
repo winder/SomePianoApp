@@ -5,27 +5,26 @@ import com.willwinder.rtp.model.Key;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.willwinder.rtp.util.Util.midiMessageToKey;
 import static com.willwinder.rtp.util.Util.midiMessageToString;
 
+/**
+ * A simple MIDI receiver which maintains a cache of the active keyboard state.
+ */
 public class KeyboardReceiver implements Receiver, KeyboardState {
     private Map<Integer, Key> activeKeys = new HashMap<>();
 
     @Override
     public void send(MidiMessage message, long timeStamp) {
-        System.out.println(midiMessageToString(message));
+        //System.out.println(midiMessageToString(message));
 
         midiMessageToKey(message).ifPresent(k -> {
             synchronized (activeKeys) {
                 if (k.isActive()) {
-                    System.out.println("Adding: " + k.toString());
                     activeKeys.put(k.key(), k);
                 } else {
-                    System.out.println("Removing: " + k.toString());
                     activeKeys.remove(k.key());
                 }
             }
@@ -38,7 +37,16 @@ public class KeyboardReceiver implements Receiver, KeyboardState {
     }
 
     @Override
-    public Collection<Key> getActiveKeys() {
-        return activeKeys.values();
+    public HashMap<Integer, Key> getActiveKeys() {
+        synchronized (activeKeys) {
+            return new HashMap<>(activeKeys);
+        }
+    }
+
+    @Override
+    public Set<Integer> getActiveKeyCodes() {
+        synchronized (activeKeys) {
+            return new HashSet<>(activeKeys.keySet());
+        }
     }
 }

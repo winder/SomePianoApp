@@ -3,6 +3,9 @@ package com.willwinder.rtp.util;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 
+/**
+ * A Pane with an embedded Canvas to automatically resize the canvas to its scene.
+ */
 public class CanvasPane extends Pane {
     final public Canvas canvas;
 

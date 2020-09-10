@@ -39,11 +39,6 @@
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.fazecast</groupId>
-            <artifactId>jSerialComm</artifactId>
-            <version>${jserialcomm.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
@@ -55,7 +50,7 @@
                 <configuration>
                     <release>14</release>
                     <compilerArgs>
-                        --enable-preview
+                      <arg>--enable-preview</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
@@ -68,6 +63,9 @@
                     <jlinkImageName>rtp</jlinkImageName>
                     <launcher>launcher</launcher>
                     <mainClass>${main.class}</mainClass>
+                    <options>
+                      <option>--enable-preview</option>
+                    </options>
                 </configuration>
                 <executions>
                     <execution>
@@ -78,6 +76,7 @@
                         <configuration>
                             <options>
                                 <option>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000</option>
+                                <option>--enable-preview</option>
                             </options>
                         </configuration>
                     </execution>

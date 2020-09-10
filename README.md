@@ -24,3 +24,10 @@ Debug
 ```
 ~$ mvn javafx:run@debug
 ```
+
+Runtime image
+```
+~$ export PATH_TO_FX_MODS=path/opt/java/javafx-jmods-14.0.2.1/
+~$ mvn javafx:jlink
+~$ ./target/rtp/bin/launcher
+```
