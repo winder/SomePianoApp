@@ -1,11 +1,13 @@
 package com.willwinder.rtp.graphics;
 
+import com.google.common.eventbus.Subscribe;
 import com.willwinder.rtp.KeyboardState;
 import com.willwinder.rtp.model.Key;
+import com.willwinder.rtp.util.NoteEvent;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -13,45 +15,48 @@ import java.util.Set;
  * to the keyboard state and can render the  keys according to their active state.
  */
 public class KeyboardView implements Renderable {
-    public record KeyboardViewParams(
-            double x,
-            double y,
-            boolean bottom,
-            double blackKeyWidth,
-            double blackKeyHeight,
-            double whiteKeyWidth,
-            double whiteKeyHeight,
-            int numOctaves,
-            int firstOctave,
-            double padding
-    ) {}
 
+    public static class KeyboardViewParams {
+        final double x;
+        final double y;
+        final boolean bottom;
+        final int numOctaves;
+        final int firstOctave;
+        final double padding;
+
+        public KeyboardViewParams(double x, double y, boolean bottom, int numOctaves, int firstOctave, double padding) {
+            this.x = x;
+            this.y = y;
+            this.bottom = bottom;
+            this.numOctaves = numOctaves;
+            this.firstOctave = firstOctave;
+            this.padding = padding;
+        }
+    }
+
+    private final Set<Integer> updatedKeys = new HashSet<>();
     private final KeyboardState state;
     private final KeyboardViewParams params;
-    private double whiteKeyWidthDiv2;
     private double currentScale = 0.0;
-    private HashMap<Integer, KeyPoints> keyPointCache = new HashMap<>();
+    private final KeyPointCache keyPointCache;
 
-    public KeyboardView(KeyboardState state, KeyboardViewParams params) {
+    public KeyboardView(KeyboardState state, KeyboardViewParams params, KeyPointCache cache) {
         this.state = state;
         this.params = params;
-        this.whiteKeyWidthDiv2 = params.whiteKeyWidth / 2.0;
+        this.keyPointCache = cache;
     }
 
     /**
-     * Draw a single key at the requested location.
+     * Draw a single key at the cached location.
      *
      * @param gc GraphicsContext to use for drawing.
      * @param note the note to draw.
-     * @param xCenter x center line where the note will be drawn.
-     * @param y y offset where the note will be drawn.
-     * @return
      */
-    private double drawKey(GraphicsContext gc, int keyNum, Key.Note note, boolean isActive, double xCenter, double y, double scale) {
+    private void drawKey(GraphicsContext gc, int keyNum, Key.Note note, boolean isActive) {
         Color c;
         if (isActive) {
-            //c = new Color(Math.random(), Math.random(), Math.random(), 1.0);
-            c = Color.GREEN;
+            c = new Color(Math.random(), Math.random(), Math.random(), 1.0);
+            //c = Color.GREEN;
         } else if (note.isWhiteKey()) {
             c = Color.WHITE;
         } else {
@@ -61,176 +66,56 @@ public class KeyboardView implements Renderable {
 
         gc.setFill(c);
 
-        // warm the cache
-        var kp = this.keyPointCache.computeIfAbsent(keyNum, key ->
-                pointsForKey(note, xCenter, y,
-                    params.whiteKeyHeight * scale,
-                    params.whiteKeyWidth * scale,
-                    params.blackKeyHeight * scale,
-                    params.blackKeyWidth * scale,
-                    params.padding));
+        var kp = this.keyPointCache.getPoints(keyNum);
 
-
-        /*
-        var kp = pointsForKey(note, xCenter, y,
-                params.whiteKeyHeight * scale,
-                params.whiteKeyWidth * scale,
-                params.blackKeyHeight * scale,
-                params.blackKeyWidth * scale,
-                //params.padding * scale);
-                params.padding);
-         */
-        gc.fillPolygon(kp.xPoints(), kp.yPoints(), kp.numPoints());
+        // TODO: Don't ignore missing keys.
+        // Ignore missing keys
+        if (kp != null) {
+            gc.fillPolygon(kp.xPoints, kp.yPoints, kp.numPoints);
+        }
 
         // If there is no sharp, move over 2 keys.
         var offsets = note.nextNoteIntervalIsSemitone(Key.Note.C) ? 1 : 2;
-        return xCenter + offsets * whiteKeyWidthDiv2;
     }
 
-    /**
-     * Draw a single octave and return the offset of the next one.
-     * @return offset that the next octave would use for the x position.
-     * @throws RenderableException
-     */
-    private double drawOctave(GraphicsContext gc, int octave, double x, double y, double scale) throws RenderableException {
-        var offset = x;
-
-        for (Key.Note note : Key.Note.values()) {
-            int keyNum = (octave - 1) * 12 + note.keyIndex();
-            boolean isActive = state.getActiveKeyCodes().contains(keyNum);
-            offset = drawKey(gc, keyNum, note, isActive, offset, y, scale);
+    @Subscribe
+    public void noteEventHandler(NoteEvent event) {
+        synchronized (updatedKeys) {
+            updatedKeys.add(event.key.key);
         }
-
-        return offset;
     }
 
     /**
      * Draw the keyboard.
      *
      * @param gc GraphicsContext to use for drawing.
+     * @param reset indicates that the display has been reset and a full redraw should occur.
      * @param scale the desired scale of the window.
-     * @throws RenderableException
      */
     @Override
-    public void draw(GraphicsContext gc, double scale) throws RenderableException {
-        if (scale != this.currentScale) {
+    public void draw(GraphicsContext gc, boolean reset, double scale) {
+        if (reset || scale != this.currentScale) {
             this.currentScale = scale;
-            this.keyPointCache.clear();
+            this.keyPointCache.reset(gc.getCanvas().getHeight(), scale);
+
+            // reset all keys
+            Key.Note note = Key.Note.noteForKey(this.keyPointCache.firstKey);
+            for (int keyOffset = 0; keyOffset < this.keyPointCache.numKeys; keyOffset++) {
+                int keyNum = keyOffset + this.keyPointCache.firstKey;
+                boolean isActive = state.getActiveKeyCodes().contains(keyNum);
+                drawKey(gc, keyNum, note, isActive);
+                note = note.nextNote();
+            }
         }
-        this.whiteKeyWidthDiv2 = params.whiteKeyWidth * scale / 2.0;
-        var offset = params.x;
-
-        var yOffset = params.y;
-        if (params.bottom) {
-            var h = gc.getCanvas().getHeight();
-            yOffset = h - (params.whiteKeyHeight * scale);
+        else {
+            synchronized (updatedKeys) {
+                for (int keyNum : updatedKeys) {
+                    Key.Note note = Key.Note.noteForKey(keyNum);
+                    boolean isActive = state.getActiveKeyCodes().contains(keyNum);
+                    drawKey(gc, keyNum, note, isActive);
+                }
+                updatedKeys.clear();
+            }
         }
-
-        for (int i = 0; i < params.numOctaves; i++) {
-            offset = drawOctave(gc, params.firstOctave + i, offset, yOffset, scale);
-        }
-    }
-
-    /**
-     * Internal response tuple for the polygon drawing computation.
-     */
-    private record KeyPoints(double[] xPoints, double[] yPoints, int numPoints){}
-
-    /**
-     * Helper to compute a polygon representing the shape of a requested key. The current
-     * algorithm places sharps exactly between the natural keys rather than offsetting them
-     * like a real piano would do to make room for the hammer mechanism.
-     *
-     * TODO: Add a "realistic" mode to offset the sharps and reshape the naturals.
-     *
-     * @param note the note which the polygon will represent.
-     * @param center centerline around which the key will be drawn.
-     * @param y y offset where the key will be drawn.
-     * @param whiteKeyHeight height of white keys.
-     * @param whiteKeyWidth width of white keys.
-     * @param blackKeyHeight height of black keys.
-     * @param blackKeyWidth width of black keys.
-     * @param padding padding around keys.
-     * @return centerline offset where the next key would go.
-     */
-    private static KeyPoints pointsForKey(Key.Note note, double center, double y, double whiteKeyHeight, double whiteKeyWidth, double blackKeyHeight, double blackKeyWidth, double padding) {
-        var whiteDiv2 = whiteKeyWidth / 2.0;
-        var blackDiv2 = blackKeyWidth / 2.0;
-
-        return switch(note) {
-            case C, F -> new KeyPoints(
-                    new double[]{
-                            center - whiteDiv2 + padding,
-                            center + whiteDiv2 - blackDiv2 - padding,
-                            center + whiteDiv2 - blackDiv2 - padding,
-                            center + whiteDiv2 - padding,
-                            center + whiteDiv2 - padding,
-                            center - whiteDiv2 + padding,
-                            center - whiteDiv2 + padding,
-                    },
-                    new double[]{
-                            y,
-                            y,
-                            y + blackKeyHeight + padding,
-                            y + blackKeyHeight + padding,
-                            y + whiteKeyHeight,
-                            y + whiteKeyHeight
-                    },
-                    6);
-            case E, B -> new KeyPoints(
-                    new double[]{
-                            center - whiteDiv2 + blackDiv2 + padding,
-                            center + whiteDiv2 - padding,
-                            center + whiteDiv2 - padding,
-                            center - whiteDiv2 + padding,
-                            center - whiteDiv2 + padding,
-                            center - whiteDiv2 + blackDiv2 + padding,
-                    },
-                    new double[]{
-                            y,
-                            y,
-                            y + whiteKeyHeight,
-                            y + whiteKeyHeight,
-                            y + blackKeyHeight + padding,
-                            y + blackKeyHeight + padding,
-                    },
-                    6);
-            case D, G, A ->new KeyPoints(
-                    new double[]{
-                            center - whiteDiv2 + blackDiv2 + padding,
-                            center + whiteDiv2 - blackDiv2 - padding,
-                            center + whiteDiv2 - blackDiv2 - padding,
-                            center + whiteDiv2 - padding,
-                            center + whiteDiv2 - padding,
-                            center - whiteDiv2 + padding,
-                            center - whiteDiv2 + padding,
-                            center - whiteDiv2 + blackDiv2 + padding,
-                    },
-                    new double[]{
-                            y,
-                            y,
-                            y + blackKeyHeight + padding,
-                            y + blackKeyHeight + padding,
-                            y + whiteKeyHeight,
-                            y + whiteKeyHeight,
-                            y + blackKeyHeight + padding,
-                            y + blackKeyHeight + padding
-                    },
-                    8);
-            case C_SHARP, D_SHARP, F_SHARP, G_SHARP, A_SHARP -> new KeyPoints(
-                    new double[]{
-                            center - blackDiv2 + padding,
-                            center + blackDiv2 - padding,
-                            center + blackDiv2 - padding,
-                            center - blackDiv2 + padding,
-                    },
-                    new double[]{
-                            y,
-                            y,
-                            y + blackKeyHeight - padding,
-                            y + blackKeyHeight - padding,
-                    },
-                    4);
-        };
     }
 }

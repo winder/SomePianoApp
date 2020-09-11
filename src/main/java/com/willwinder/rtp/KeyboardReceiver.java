@@ -1,6 +1,8 @@
 package com.willwinder.rtp;
 
+import com.google.common.eventbus.EventBus;
 import com.willwinder.rtp.model.Key;
+import com.willwinder.rtp.util.NoteEvent;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -8,13 +10,18 @@ import javax.sound.midi.Receiver;
 import java.util.*;
 
 import static com.willwinder.rtp.util.Util.midiMessageToKey;
-import static com.willwinder.rtp.util.Util.midiMessageToString;
 
 /**
  * A simple MIDI receiver which maintains a cache of the active keyboard state.
  */
 public class KeyboardReceiver implements Receiver, KeyboardState {
-    private Map<Integer, Key> activeKeys = new HashMap<>();
+    private final EventBus eventBus;
+
+    public KeyboardReceiver(EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
+
+    private final Map<Integer, Key> activeKeys = new HashMap<>();
 
     @Override
     public void send(MidiMessage message, long timeStamp) {
@@ -23,11 +30,12 @@ public class KeyboardReceiver implements Receiver, KeyboardState {
         midiMessageToKey(message).ifPresent(k -> {
             synchronized (activeKeys) {
                 if (k.isActive()) {
-                    activeKeys.put(k.key(), k);
+                    activeKeys.put(k.key, k);
                 } else {
-                    activeKeys.remove(k.key());
+                    activeKeys.remove(k.key);
                 }
             }
+            eventBus.post(new NoteEvent(k, k.isActive()));
         });
     }
 

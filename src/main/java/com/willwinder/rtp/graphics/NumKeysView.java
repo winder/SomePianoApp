@@ -9,14 +9,14 @@ import javafx.scene.paint.Color;
  */
 public class NumKeysView implements Renderable {
 
-    private KeyboardState state;
+    private final KeyboardState state;
 
     public NumKeysView(KeyboardState state) {
         this.state = state;
     }
 
     @Override
-    public void draw(GraphicsContext gc, double scale) throws RenderableException {
+    public void draw(GraphicsContext gc, boolean reset, double scale) {
         gc.setFill(Color.WHITE);
         gc.fillText(String.valueOf(state.getActiveKeys().size()), 10.0, 10.0);
     }

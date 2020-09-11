@@ -12,9 +12,9 @@ public interface Renderable {
 
     /**
      * Called when this component should be drawn.
-     * @param gc the {@GraphicsContext} where the drawing should be made.
+     * @param gc the GraphicsContext where the drawing should be made.
+     * @param reset indicates that the display has been reset and a full redraw should occur.
      * @param scale the desired scale of the drawing.
-     * @throws RenderableException
      */
-    void draw(GraphicsContext gc, double scale) throws RenderableException;
+    void draw(GraphicsContext gc, boolean reset, double scale) throws RenderableException;
 }

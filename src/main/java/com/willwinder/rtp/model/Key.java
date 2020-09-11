@@ -4,7 +4,23 @@ import com.willwinder.rtp.util.Util;
 
 import javax.sound.midi.ShortMessage;
 
-public record Key(Note note, int octave, int command, int status, int key, int velocity) {
+public class Key {
+    public final Note note;
+    public final int octave;
+    public final int command;
+    public final int status;
+    public final int key;
+    public final int velocity;
+
+    public Key(Note note, int octave, int command, int status, int key, int velocity) {
+        this.note = note;
+        this.octave = octave;
+        this.command = command;
+        this.status = status;
+        this.key = key;
+        this.velocity = velocity;
+    }
+
     public enum Note {
         C("C"),
         C_SHARP("C#"),
@@ -20,10 +36,27 @@ public record Key(Note note, int octave, int command, int status, int key, int v
         B("B");
 
         public final String name;
-        private static Note[] vals = values();
+        private final static Note[] values = values();
 
         Note(String name) {
             this.name = name;
+        }
+
+        /**
+         * Given a key number returns the corresponding note.
+         * @param key index of key starting with C1 = 0.
+         * @return the corresponding Note enum.
+         */
+        public static Note noteForKey(int key) {
+            return values[key % 12];
+        }
+
+        /**
+         * Gets the note to the right of a given note.
+         * @return the corresponding Note enum.
+         */
+        public Note nextNote() {
+            return values[(this.ordinal() + 1) % values.length];
         }
 
         /**
@@ -65,14 +98,15 @@ public record Key(Note note, int octave, int command, int status, int key, int v
                 return true;
             }
             // If not a sharp, only a semitone if the next note is.
-            if(this.ordinal() + 1 < vals.length) {
-                return vals[this.ordinal() + 1].name.contains("#");
+            if(this.ordinal() + 1 < values.length) {
+                return values[this.ordinal() + 1].name.contains("#");
             }
 
             // When wrapping octaves from B -> C, it is a full tone, not a semitone.
             return false;
         }
     }
+
     public boolean isActive() {
         return this.command == ShortMessage.NOTE_ON;
     }
@@ -82,18 +116,16 @@ public record Key(Note note, int octave, int command, int status, int key, int v
         String command = Util.commandToString(this.command);
         String status = Util.statusToString(this.status);
 
-        return new StringBuilder()
-                .append(note)
-                .append(octave)
-                .append(" (")
-                .append(key)
-                .append(")")
-                .append(" --  command: ")
-                .append(command)
-                .append(", status: ")
-                .append(status)
-                .append(", velocity: ")
-                .append(velocity)
-                .toString();
+        return String.valueOf(note) +
+                octave +
+                " (" +
+                key +
+                ")" +
+                " --  command: " +
+                command +
+                ", status: " +
+                status +
+                ", velocity: " +
+                velocity;
     }
 }

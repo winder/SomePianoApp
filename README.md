@@ -5,6 +5,25 @@ https://openjfx.io/openjfx-docs/#maven
 
 
 # Quickstart
+
+## Gradle
+
+Run
+```
+~$ ./gradlew run
+```
+
+Debug (use maven)
+
+Runtime image
+```
+~$ ./gradlew jlink
+~$ ./build/image/bin/rtp
+```
+
+## Maven (legacy)
+
+** Note: moving away from maven because it doesn't seem to handle modular projects as easily. **
 Download SDK and jmods:
 https://gluonhq.com/products/javafx/
 
