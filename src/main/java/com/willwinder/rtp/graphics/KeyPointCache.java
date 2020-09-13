@@ -8,7 +8,8 @@ public class KeyPointCache {
     private final HashMap<Integer, KeyPointCache.KeyPoints> cache = new HashMap<>();
 
     private double height;
-    private double x;
+    private double leftMargin;
+    private double rightMargin;
     private double whiteKeyHeight;
     private double whiteKeyWidth;
     private double blackKeyHeight;
@@ -20,7 +21,8 @@ public class KeyPointCache {
 
     public KeyPointCache(
             double height,
-            double x,
+            double leftMargin,
+            double rightMargin,
             double blackKeyWidth,
             double blackKeyHeight,
             double whiteKeyWidth,
@@ -30,7 +32,8 @@ public class KeyPointCache {
             int firstKey,
             int numKeys) {
         this.height = height;
-        this.x = x;
+        this.leftMargin = leftMargin;
+        this.rightMargin = rightMargin;
         this.whiteKeyHeight = whiteKeyHeight;
         this.whiteKeyWidth = whiteKeyWidth;
         this.blackKeyHeight = blackKeyHeight;
@@ -69,7 +72,7 @@ public class KeyPointCache {
 
         Key.Note note = Key.Note.noteForKey(this.firstKey);
         var xStep = getWhiteKeyWidth() / 2.0;
-        var xCenter = x + xStep;
+        var xCenter = leftMargin + xStep;
         for (int i = this.firstKey; i < this.firstKey + numKeys; i++) {
             this.cache.put(i, pointsForKey(
                     note,

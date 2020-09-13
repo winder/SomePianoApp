@@ -1,6 +1,5 @@
 package com.willwinder.rtp.graphics.renderables;
 
-import com.google.common.graph.Graph;
 import com.willwinder.rtp.graphics.Renderable;
 import com.willwinder.rtp.model.TimelineParams;
 import javafx.scene.canvas.GraphicsContext;
@@ -50,9 +49,9 @@ public class BPMLines implements Renderable {
             y = incommingOffset(gc, p, msPerBeat, duration, timelineHeight);
         }
 
-        double x1 = params.timelineParams.xLeftMargin;
-        double x2 = p.canvasWidth - params.timelineParams.xRightMargin;
-        double endOffset = timelineHeight - params.timelineParams.yTopMargin;
+        double x1 = 0;
+        double x2 = p.canvasWidth;
+        double endOffset = timelineHeight;
         for (double yOffset = y; yOffset < endOffset; yOffset += this.yBeatOffset) {
             gc.setStroke(Color.DARKGRAY);
             gc.setLineWidth(1);

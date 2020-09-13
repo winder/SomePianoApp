@@ -75,9 +75,6 @@ public class KeyboardView implements Renderable {
         if (kp != null) {
             gc.fillPolygon(kp.xPoints, kp.yPoints, kp.numPoints);
         }
-
-        // If there is no sharp, move over 2 keys.
-        var offsets = note.nextNoteIntervalIsSemitone(Key.Note.C) ? 1 : 2;
     }
 
     @Subscribe

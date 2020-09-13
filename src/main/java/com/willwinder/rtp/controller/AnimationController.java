@@ -3,6 +3,7 @@ package com.willwinder.rtp.controller;
 import com.willwinder.rtp.graphics.Renderable;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,8 @@ public class AnimationController extends AnimationTimer {
 
         boolean reset = false;
         if (this.scale != scale) {
-            gc.clearRect(0, 0, width, height);
+            gc.setFill(Color.BLACK);
+            gc.fillRect(0, 0, width, height);
             this.scale = scale;
             reset = true;
         }

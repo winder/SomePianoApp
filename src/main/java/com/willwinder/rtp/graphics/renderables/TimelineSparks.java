@@ -113,11 +113,12 @@ public class TimelineSparks implements Renderable {
 
     /**
      * Compute the spark size, and then draw it.
-     * @param gc
-     * @param spark
-     * @param topMs
-     * @param w
-     * @param h
+     * @param gc GraphicsContext where the spark will be drawn.
+     * @param spark metadata associated with the spark.
+     * @param topMs timestamp in milliseconds of the top of the timeline. "now" is at the bottom.
+     * @param w width of the timeline canvas.
+     * @param h height of the timeline canvas.
+     * @param now precomputed now timestamp to ensure all sparks are aligned.
      */
     private void drawSpark(GraphicsContext gc, TimelineSpark spark, long topMs, double w, double h, long now) {
         // Get X dimensions (key width)
@@ -134,7 +135,7 @@ public class TimelineSparks implements Renderable {
         }
 
         // Get Y dimensions (key press timestamps)
-        double timelineHeight = h - params.keyPointCache.getWhiteKeyHeight() - params.yTopMargin;
+        double timelineHeight = h - params.keyPointCache.getWhiteKeyHeight();
         long duration = this.params.timelineDuration.toMillis();
 
         double yMax = 0.0;
@@ -156,7 +157,7 @@ public class TimelineSparks implements Renderable {
                 yMin = 0;
             }
         }
-        // Notes are incomming
+        // Notes are incoming
         else {
             if (spark.endTimeMs > 0) {
                 long range = topMs - spark.endTimeMs;
@@ -165,9 +166,6 @@ public class TimelineSparks implements Renderable {
                 yMax = 0;
             }
 
-            //System.out.println("Diff topms - now: " + (topMs - now));
-            //System.out.println("Diff topms - start: " + (topMs - spark.startTimeMs));
-            //System.out.println("Diff start - now: " + (spark.startTimeMs - now));
             if (spark.startTimeMs > now) {
                 long range = topMs - spark.startTimeMs;
                 yMin = range / (double) duration * timelineHeight;
@@ -179,30 +177,9 @@ public class TimelineSparks implements Renderable {
         gc.setFill(Color.RED);
 
         gc.fillRect(
-                params.xLeftMargin + xMin,
-                params.yTopMargin + yMin,
-                Math.min(xMax - xMin, w - params.xRightMargin),
+                xMin,
+                yMin,
+                Math.min(xMax - xMin, w),
                 Math.min(yMax - yMin, h - params.keyPointCache.getWhiteKeyHeight()));
-    }
-
-    private static double getYEndOffset(long timeMs, long topMs, double timelineHeight, long duration) {
-        long diff = timeMs - topMs;
-        if (timeMs > 0) {
-            long range = timeMs - topMs;
-            return range / (double) duration * timelineHeight;
-        } else {
-            return timelineHeight;
-        }
-    }
-
-    private static double getYStartOffset(long timeMs, long topMs, double timelineHeight, long duration) {
-        long diff = timeMs - topMs;
-        if (timeMs > topMs) {
-            long range = timeMs - topMs;
-            return range / (double) duration * timelineHeight;
-        } else {
-            return 0;
-        }
-
     }
 }
