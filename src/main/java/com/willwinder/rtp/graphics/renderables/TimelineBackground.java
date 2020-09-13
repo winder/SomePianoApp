@@ -1,7 +1,7 @@
 package com.willwinder.rtp.graphics.renderables;
 
 import com.willwinder.rtp.graphics.Renderable;
-import com.willwinder.rtp.model.TimelineParams;
+import com.willwinder.rtp.model.params.TimelineParams;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 

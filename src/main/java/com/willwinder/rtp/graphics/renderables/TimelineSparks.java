@@ -2,7 +2,7 @@ package com.willwinder.rtp.graphics.renderables;
 
 import com.google.common.eventbus.Subscribe;
 import com.willwinder.rtp.graphics.Renderable;
-import com.willwinder.rtp.model.TimelineParams;
+import com.willwinder.rtp.model.params.TimelineParams;
 import com.willwinder.rtp.util.NoteEvent;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -43,7 +43,7 @@ public class TimelineSparks implements Renderable {
     @Subscribe
     public void noteEvent(NoteEvent event) {
         int offset = 0;
-        if (!this.params.out) {
+        if (!this.params.out.get()) {
             offset = +3000;
         }
         final int finalOffset = offset;
@@ -83,10 +83,11 @@ public class TimelineSparks implements Renderable {
     @Override
     public void draw(GraphicsContext gc, DrawParams p) throws RenderableException {
         long topMs = 0;
-        if(this.params.out) {
-            topMs = p.nowMs - this.params.timelineDuration.toMillis();
+        long duration = this.params.timelineDuration.get().toMillis();
+        if(this.params.out.get()) {
+            topMs = p.nowMs - duration;
         } else {
-            topMs = p.nowMs + this.params.timelineDuration.toMillis();
+            topMs = p.nowMs + duration;
         }
 
         // Process the sparks
@@ -96,7 +97,7 @@ public class TimelineSparks implements Renderable {
                 while (iter.hasNext()) {
                     var spark = iter.next();
 
-                    long ageCutoff = this.params.out ? topMs : p.nowMs;
+                    long ageCutoff = this.params.out.get() ? topMs : p.nowMs;
 
                     // If it's too old, remove it.
                     if (spark.endTimeMs > 0 && spark.endTimeMs < ageCutoff) {
@@ -136,13 +137,13 @@ public class TimelineSparks implements Renderable {
 
         // Get Y dimensions (key press timestamps)
         double timelineHeight = h - params.keyPointCache.getWhiteKeyHeight();
-        long duration = this.params.timelineDuration.toMillis();
+        long duration = this.params.timelineDuration.get().toMillis();
 
         double yMax = 0.0;
         double yMin = 0.0;
 
         // Notes are outgoing
-        if (this.params.out) {
+        if (this.params.out.get()) {
             if (spark.endTimeMs > 0) {
                 long range = spark.endTimeMs - topMs;
                 yMax = range / (double) duration * timelineHeight;

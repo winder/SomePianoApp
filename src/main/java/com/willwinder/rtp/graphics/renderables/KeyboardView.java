@@ -18,33 +18,13 @@ import java.util.Set;
  */
 public class KeyboardView implements Renderable {
 
-    public static class KeyboardViewParams {
-        final double x;
-        final double y;
-        final boolean bottom;
-        final int numOctaves;
-        final int firstOctave;
-        final double padding;
-
-        public KeyboardViewParams(double x, double y, boolean bottom, int numOctaves, int firstOctave, double padding) {
-            this.x = x;
-            this.y = y;
-            this.bottom = bottom;
-            this.numOctaves = numOctaves;
-            this.firstOctave = firstOctave;
-            this.padding = padding;
-        }
-    }
-
     private final Set<Integer> updatedKeys = new HashSet<>();
     private final KeyboardState state;
-    private final KeyboardViewParams params;
     private double currentWidth = 0.0;
     private final KeyPointCache keyPointCache;
 
-    public KeyboardView(KeyboardState state, KeyboardViewParams params, KeyPointCache cache) {
+    public KeyboardView(KeyboardState state, KeyPointCache cache) {
         this.state = state;
-        this.params = params;
         this.keyPointCache = cache;
     }
 
@@ -96,9 +76,9 @@ public class KeyboardView implements Renderable {
             this.keyPointCache.reset(p.canvasHeight, p.canvasWidth);
 
             // reset all keys
-            Key.Note note = Key.Note.noteForKey(this.keyPointCache.firstKey);
-            for (int keyOffset = 0; keyOffset < this.keyPointCache.numKeys; keyOffset++) {
-                int keyNum = keyOffset + this.keyPointCache.firstKey;
+            Key.Note note = Key.Note.noteForKey(this.keyPointCache.params.firstKey.get());
+            for (int keyOffset = 0; keyOffset < this.keyPointCache.params.numKeys.get(); keyOffset++) {
+                int keyNum = keyOffset + this.keyPointCache.params.firstKey.get();
                 boolean isActive = state.getActiveKeyCodes().contains(keyNum);
                 drawKey(gc, keyNum, note, isActive);
                 note = note.nextNote();

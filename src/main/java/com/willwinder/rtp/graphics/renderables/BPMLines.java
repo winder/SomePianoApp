@@ -1,25 +1,15 @@
 package com.willwinder.rtp.graphics.renderables;
 
 import com.willwinder.rtp.graphics.Renderable;
-import com.willwinder.rtp.model.TimelineParams;
+import com.willwinder.rtp.model.params.BPMParams;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.time.Duration;
 
 public class BPMLines implements Renderable {
-    public static class BPMParams {
-        public int bpm;
-        public TimelineParams timelineParams;
-
-        public BPMParams(int bpm, TimelineParams timelineParams) {
-            this.bpm = bpm;
-            this.timelineParams = timelineParams;
-        }
-    }
 
     private final BPMParams params;
-
 
     public BPMLines(BPMParams params) {
         this.params = params;
@@ -34,8 +24,8 @@ public class BPMLines implements Renderable {
      */
     @Override
     public void draw(GraphicsContext gc, DrawParams p) throws RenderableException {
-        long msPerBeat = Duration.ofMinutes(1).toMillis() / params.bpm;
-        long duration = this.params.timelineParams.timelineDuration.toMillis();
+        long msPerBeat = Duration.ofMinutes(1).toMillis() / params.bpm.get();
+        long duration = this.params.timelineParams.timelineDuration.get().toMillis();
         double timelineHeight = this.params.timelineParams.getHeight(p.canvasHeight);
         if (p.reset || this.yBeatOffset == 0.0) {
             // recompute yBeatOffset
@@ -43,7 +33,7 @@ public class BPMLines implements Renderable {
         }
 
         double y = 0;
-        if (this.params.timelineParams.out) {
+        if (this.params.timelineParams.out.get()) {
             y = outgoingOffset(gc, p, msPerBeat, duration, timelineHeight);
         } else {
             y = incommingOffset(gc, p, msPerBeat, duration, timelineHeight);

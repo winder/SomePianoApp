@@ -1,62 +1,32 @@
 package com.willwinder.rtp.graphics;
 
 import com.willwinder.rtp.model.Key;
+import com.willwinder.rtp.model.params.KeyPointCacheParams;
 
 import java.util.HashMap;
 
 public class KeyPointCache {
-    private final HashMap<Integer, KeyPointCache.KeyPoints> cache = new HashMap<>();
 
+    // Params
+    public final KeyPointCacheParams params;
+
+    // Cache these to trigger recomputing the cache.
     private double height;
     private double width;
 
-    private double leftMargin;
-    private double rightMargin;
+    // Computed values
     private double whiteKeyHeight;
     private double whiteKeyWidth;
     private double blackKeyHeight;
-    private double blackKeyRatio;
     private double blackKeyWidth;
-    private double blackKeyHeightRatio;
-    private double whiteKeyHeightRatio;
-    private double padding;
-    public int firstKey;
-    public int numKeys;
 
-    /**
-     * @param height height of the canvas to allow positioning keys at the bottom.
-     * @param width width of the canvas to compute the key scale.
-     * @param leftMargin margin to the left of the keys.
-     * @param rightMargin margin to the right of the keys
-     * @param blackKeyWidthRatio ratio between white key width and black key width.
-     * @param blackKeyHeightRatio ratio between white key height and black key height.
-     * @param whiteKeyHeightRatio ratio from white key width to white key height.
-     * @param padding padding around keys, removed from the size, not added.
-     * @param firstKey the first key on keyboard, MIDI key code (A0 = 21).
-     * @param numKeys number of keys on keyboard.
-     */
-    public KeyPointCache(
-            double height,
-            double width,
-            double leftMargin,
-            double rightMargin,
-            double blackKeyWidthRatio,
-            double blackKeyHeightRatio,
-            double whiteKeyHeightRatio,
-            double padding,
-            int firstKey,
-            int numKeys) {
-        this.height = height;
-        this.leftMargin = leftMargin;
-        this.rightMargin = rightMargin;
-        this.blackKeyHeightRatio = blackKeyHeightRatio;
-        this.whiteKeyHeightRatio = whiteKeyHeightRatio;
-        this.blackKeyRatio = blackKeyWidthRatio;
-        this.padding = padding;
-        this.firstKey = firstKey;
-        this.numKeys = numKeys;
+    // Cache
+    private final HashMap<Integer, KeyPointCache.KeyPoints> cache = new HashMap<>();
 
-        reset(height, width);
+    public KeyPointCache(KeyPointCacheParams params) {
+        this.params = params;
+        this.height = 0.0;
+        this.width = 0.0;
     }
 
     public double getBlackKeyHeight() {
@@ -75,6 +45,11 @@ public class KeyPointCache {
         return whiteKeyWidth;
     }
 
+    /**
+     * Reset the cache given a new canvas size.
+     * @param newHeight new canvas height.
+     * @param newWidth new canvas width.
+     */
     public void reset(double newHeight, double newWidth) {
         // If nothing changed and this isn't the first call to reset, this is a no-op.
         if (newWidth == width &&  newHeight == height && this.cache.size() != 0) return;
@@ -84,24 +59,24 @@ public class KeyPointCache {
         cache.clear();
 
         // Compute whiteKeyWidth
-        Key.Note note = Key.Note.noteForKey(firstKey);
+        Key.Note note = Key.Note.noteForKey(params.firstKey.get());
         int numWhiteKeys = 0;
-        for (int i = 0; i < numKeys; i++) {
+        for (int i = 0; i < params.numKeys.get(); i++) {
             if (note.isWhiteKey()) {
                 numWhiteKeys++;
             }
             note = note.nextNote();
         }
 
-        whiteKeyWidth = (width - leftMargin - rightMargin) / (double) numWhiteKeys;
-        blackKeyWidth = whiteKeyWidth * blackKeyRatio;
-        whiteKeyHeight = whiteKeyWidth * whiteKeyHeightRatio;
-        blackKeyHeight = whiteKeyHeight * blackKeyHeightRatio;
+        whiteKeyWidth = (width - params.leftMargin.get() - params.rightMargin.get()) / (double) numWhiteKeys;
+        blackKeyWidth = whiteKeyWidth * params.blackKeyWidthRatio.get();
+        whiteKeyHeight = whiteKeyWidth * params.whiteKeyHeightRatio.get();
+        blackKeyHeight = whiteKeyHeight * params.blackKeyHeightRatio.get();
 
-        note = Key.Note.noteForKey(this.firstKey);
+        note = Key.Note.noteForKey(params.firstKey.get());
         var xStep = getWhiteKeyWidth() / 2.0;
-        var xCenter = leftMargin + xStep;
-        for (int i = this.firstKey; i < this.firstKey + numKeys; i++) {
+        var xCenter = params.leftMargin.get() + xStep;
+        for (int i = params.firstKey.get(); i < params.firstKey.get() + params.numKeys.get(); i++) {
             this.cache.put(i, pointsForKey(
                     note,
                     xCenter,
@@ -110,7 +85,7 @@ public class KeyPointCache {
                     getWhiteKeyWidth(),
                     getBlackKeyHeight(),
                     getBlackKeyWidth(),
-                    padding));
+                    params.padding.get()));
             xCenter += xStep;
             // Add another step if there is no sharp.
             if (!note.nextNoteIntervalIsSemitone(Key.Note.C)) {
@@ -120,7 +95,11 @@ public class KeyPointCache {
         }
     }
 
-    // TODO: Figure out a way to compute xCenter
+    /**
+     * Get points for a given key number.
+     * @param keyNum the key.
+     * @return points for key.
+     */
     public KeyPoints getPoints(int keyNum) {
         return cache.get(keyNum);
     }

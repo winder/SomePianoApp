@@ -1,11 +1,12 @@
 package com.willwinder.rtp;
 
-import com.google.common.graph.Graph;
 import com.willwinder.rtp.controller.AnimationController;
 import com.willwinder.rtp.graphics.*;
 import com.willwinder.rtp.graphics.renderables.*;
-import com.willwinder.rtp.model.KeyboardState;
-import com.willwinder.rtp.model.TimelineParams;
+import com.willwinder.rtp.model.params.AllParams;
+import com.willwinder.rtp.model.params.BPMParams;
+import com.willwinder.rtp.model.params.KeyPointCacheParams;
+import com.willwinder.rtp.model.params.TimelineParams;
 import com.willwinder.rtp.util.BorderToolBar;
 import com.willwinder.rtp.util.CanvasPane;
 
@@ -14,17 +15,13 @@ import com.willwinder.rtp.util.GraphicButton;
 import com.willwinder.rtp.util.KeyboardReceiver;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.control.ToolBar;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.fontawesome.FontAwesome;
-import org.kordamp.ikonli.fontawesome.FontAwesomeIkonHandler;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -40,30 +37,10 @@ import static com.willwinder.rtp.Constants.*;
  */
 public class Main extends Application {
 
-    private class AllParams {
-        private final KeyPointCache keyPointCache;
-        private final KeyboardView.KeyboardViewParams keyboardViewParams;
-        private final TimelineParams timelineParams;
-        private final BPMLines.BPMParams bpmParams;
-        private final EventBus eventBus;
-        private final KeyboardState keyboardState;
-        private final KeyboardReceiver keyboardReceiver;
-
-        private AllParams(KeyPointCache keyPointCache, KeyboardView.KeyboardViewParams keyboardViewParams, TimelineParams timelineParams, BPMLines.BPMParams bpmParams, EventBus eventBus, KeyboardState keyboardState, KeyboardReceiver keyboardReceiver) {
-            this.keyPointCache = keyPointCache;
-            this.keyboardViewParams = keyboardViewParams;
-            this.timelineParams = timelineParams;
-            this.bpmParams = bpmParams;
-            this.eventBus = eventBus;
-            this.keyboardState = keyboardState;
-            this.keyboardReceiver = keyboardReceiver;
-        }
-    }
-
     private AnimationTimer initializeAnimation(GraphicsContext gc, AllParams params) {
 
         AnimationController ac = new AnimationController(gc);
-        KeyboardView keyboardView = new KeyboardView(params.keyboardState, params.keyboardViewParams, params.keyPointCache);
+        KeyboardView keyboardView = new KeyboardView(params.keyboardState, params.keyPointCache);
 
 
         TimelineBackground timelineBackground = new TimelineBackground(params.timelineParams);
@@ -156,16 +133,7 @@ public class Main extends Application {
         EventBus eventBus = new EventBus();
         KeyboardReceiver receiver = new KeyboardReceiver(eventBus);
 
-        KeyboardView.KeyboardViewParams keyboardViewParams = new KeyboardView.KeyboardViewParams(
-                5.0,
-                200.0,
-                true,
-                5,
-                4,
-                1);
-        KeyPointCache keyPointCache = new KeyPointCache(
-                DEFAULT_HEIGHT,
-                DEFAULT_WIDTH,
+        KeyPointCacheParams keyPointCacheParams = new KeyPointCacheParams(
                 50.0,
                 50.0,
                 0.53,
@@ -178,17 +146,19 @@ public class Main extends Application {
                 //21,
                 //88);
 
+        KeyPointCache keyPointCache = new KeyPointCache(keyPointCacheParams);
+
         TimelineParams timelineParams = new TimelineParams(
                 true,
                 Duration.ofSeconds(3),
                 keyPointCache);
-        BPMLines.BPMParams bpmParams = new BPMLines.BPMParams(
+        BPMParams bpmParams = new BPMParams(
                 100,
                 timelineParams);
 
         AllParams params = new AllParams(
+                keyPointCacheParams,
                 keyPointCache,
-                keyboardViewParams,
                 timelineParams,
                 bpmParams,
                 eventBus,
