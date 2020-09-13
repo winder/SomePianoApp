@@ -107,7 +107,15 @@ public class Main extends Application {
         Button settings = new GraphicButton(settingsIcon, Color.DARKGRAY);
         settings.setOnAction(e -> System.out.println("View settings"));
 
+        FontIcon arrowIcon = FontIcon.of(FontAwesome.ARROWS_V, 30, Color.WHITE);
+        Button toggleOut = new GraphicButton(arrowIcon, Color.DARKGRAY);
+        toggleOut.setOnAction(e -> {
+            boolean out = allParams.timelineParams.out.get();
+            allParams.timelineParams.out.setValue(!out);
+        });
+
         toolBar.addRight(settings);
+        toolBar.addLeft(toggleOut);
 
         // Stack UI layers.
         StackPane mainPane = new StackPane();
