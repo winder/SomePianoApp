@@ -19,7 +19,7 @@ import static com.willwinder.rtp.Constants.DEFAULT_WIDTH;
 public class AnimationController extends AnimationTimer {
     private final GraphicsContext gc;
     private final List<Renderable> renderableList = new ArrayList<>();
-    private double scale = 0.0;
+    private double w, h = 0.0;
 
     public AnimationController(GraphicsContext gc) {
         this.gc = gc;
@@ -39,21 +39,19 @@ public class AnimationController extends AnimationTimer {
     public void handle(long l) {
         double height = gc.getCanvas().getHeight();
         double width = gc.getCanvas().getWidth();
-        double scale = width / Double.valueOf(DEFAULT_WIDTH);
 
         boolean reset = false;
-        if (this.scale != scale) {
+        if (w != width || h != height) {
             gc.setFill(Color.BLACK);
             gc.fillRect(0, 0, width, height);
-            this.scale = scale;
+            this.w = width;
+            this.h = height;
             reset = true;
         }
 
         long now = System.currentTimeMillis();
-        double w = gc.getCanvas().getWidth();
-        double h = gc.getCanvas().getHeight();
 
-        Renderable.DrawParams drawParams = new Renderable.DrawParams(w, h, reset, scale, now);
+        Renderable.DrawParams drawParams = new Renderable.DrawParams(w, h, reset, now);
 
         for (Renderable r : renderableList) {
             try {

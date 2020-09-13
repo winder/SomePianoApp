@@ -14,21 +14,18 @@ public interface Renderable {
         public final double canvasWidth;
         public final double canvasHeight;
         public final boolean reset;
-        public final double scale;
         public final long nowMs;
 
         /**
          * @param canvasWidth current width of the canvas.
          * @param canvasHeight current height of the canvas.
          * @param reset indicates that the display has been reset and a full redraw should occur.
-         * @param scale the desired scale of the drawing.
          * @param nowMs the current time in milliseconds, passed in since many renderables need it.
          */
-        public DrawParams(double canvasWidth, double canvasHeight, boolean reset, double scale, long nowMs) {
+        public DrawParams(double canvasWidth, double canvasHeight, boolean reset, long nowMs) {
             this.canvasWidth = canvasWidth;
             this.canvasHeight = canvasHeight;
             this.reset = reset;
-            this.scale = scale;
             this.nowMs = nowMs;
         }
     }
