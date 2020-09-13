@@ -5,6 +5,10 @@ plugins {
     id 'org.beryx.jlink' version '2.21.3'
 }
 
+// Workaround for gradle 6.6.1 issue
+// https://github.com/java9-modularity/gradle-modules-plugin/issues/165#issuecomment-677736059
+modularity.disableEffectiveArgumentsAdjustment()
+
 repositories {
     mavenCentral()
 }
@@ -16,10 +20,9 @@ dependencies {
     implementation 'com.google.guava:guava:29.0-jre'
 }
 
-
 application {
     mainClassName = "rtp/com.willwinder.rtp.Main"
-    //mainModule = "rtp/com.willwinder.rtp"
+    mainModule = "com.willwinder.rtp"
 }
 
 javafx {

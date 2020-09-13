@@ -16,7 +16,7 @@ public class NumKeysView implements Renderable {
     }
 
     @Override
-    public void draw(GraphicsContext gc, boolean reset, double scale) {
+    public void draw(GraphicsContext gc, DrawParams p) {
         gc.setFill(Color.WHITE);
         gc.fillText(String.valueOf(state.getActiveKeys().size()), 10.0, 10.0);
     }

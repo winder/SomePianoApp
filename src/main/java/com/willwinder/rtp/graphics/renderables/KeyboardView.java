@@ -87,16 +87,14 @@ public class KeyboardView implements Renderable {
 
     /**
      * Draw the keyboard.
-     *
      * @param gc GraphicsContext to use for drawing.
-     * @param reset indicates that the display has been reset and a full redraw should occur.
-     * @param scale the desired scale of the window.
+     * @param p the params object full of useful bits and bobs for the Renderables.
      */
     @Override
-    public void draw(GraphicsContext gc, boolean reset, double scale) {
-        if (reset || scale != this.currentScale) {
-            this.currentScale = scale;
-            this.keyPointCache.reset(gc.getCanvas().getHeight(), scale);
+    public void draw(GraphicsContext gc, DrawParams p) {
+        if (p.reset || p.scale != this.currentScale) {
+            this.currentScale = p.scale;
+            this.keyPointCache.reset(gc.getCanvas().getHeight(), p.scale);
 
             // reset all keys
             Key.Note note = Key.Note.noteForKey(this.keyPointCache.firstKey);

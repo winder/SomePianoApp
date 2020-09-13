@@ -13,13 +13,13 @@ Run
 ~$ ./gradlew run
 ```
 
-Debug (use maven)
-
 Runtime image
 ```
 ~$ ./gradlew jlink
 ~$ ./build/image/bin/rtp
 ```
+
+IntelliJ integration run/debug integration works with no configuration.
 
 ## Maven (legacy)
 
