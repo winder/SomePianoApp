@@ -2,17 +2,17 @@ package com.willwinder.rtp.graphics;
 
 import javafx.scene.canvas.GraphicsContext;
 
-public class RenderableFPS implements Renderable {
+public class RenderableFps implements Renderable {
     private final Renderable r;
     private final int fps;
-    private final double delay;
+    private final double delayMs;
 
     private long nextDraw = 0;
 
-    public RenderableFPS(Renderable r, int fps) {
+    public RenderableFps(Renderable r, int fps) {
         this.r = r;
         this.fps = fps;
-        this.delay = 1 / (double) fps;
+        this.delayMs = 1 / (double) fps;
     }
 
 
@@ -20,7 +20,7 @@ public class RenderableFPS implements Renderable {
     public void draw(GraphicsContext gc, DrawParams params) throws RenderableException {
         if (nextDraw < params.nowMs) {
             r.draw(gc, params);
-            nextDraw = params.nowMs + (long) delay;
+            nextDraw = params.nowMs + (long) (delayMs * 1000);
         }
     }
 }

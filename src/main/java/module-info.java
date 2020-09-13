@@ -4,5 +4,5 @@ module rtp {
     requires com.google.common;
 
     exports com.willwinder.rtp;
-    exports com.willwinder.rtp.graphics;
+    exports com.willwinder.rtp.graphics.renderables;
 }

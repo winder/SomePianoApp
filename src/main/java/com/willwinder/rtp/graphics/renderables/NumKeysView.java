@@ -1,6 +1,7 @@
-package com.willwinder.rtp.graphics;
+package com.willwinder.rtp.graphics.renderables;
 
-import com.willwinder.rtp.KeyboardState;
+import com.willwinder.rtp.model.KeyboardState;
+import com.willwinder.rtp.graphics.Renderable;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 

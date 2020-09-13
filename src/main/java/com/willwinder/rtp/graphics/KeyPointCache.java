@@ -97,7 +97,7 @@ public class KeyPointCache {
     /**
      * Internal response tuple for the polygon drawing computation.
      */
-    protected static class KeyPoints {
+    public static class KeyPoints {
         final public double[] xPoints;
         final public double[] yPoints;
         final public int numPoints;

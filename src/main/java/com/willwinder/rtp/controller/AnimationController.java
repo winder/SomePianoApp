@@ -1,6 +1,5 @@
 package com.willwinder.rtp.controller;
 
-import com.willwinder.rtp.KeyboardState;
 import com.willwinder.rtp.graphics.Renderable;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.GraphicsContext;
@@ -48,9 +47,15 @@ public class AnimationController extends AnimationTimer {
             reset = true;
         }
 
+        long now = System.currentTimeMillis();
+        double w = gc.getCanvas().getWidth();
+        double h = gc.getCanvas().getHeight();
+
+        Renderable.DrawParams drawParams = new Renderable.DrawParams(w, h, reset, scale, now);
+
         for (Renderable r : renderableList) {
             try {
-                r.draw(gc, reset, scale);
+                r.draw(gc, drawParams);
             } catch (Renderable.RenderableException e) {
                 e.printStackTrace();
             }

@@ -1,7 +1,8 @@
-package com.willwinder.rtp;
+package com.willwinder.rtp.util;
 
 import com.google.common.eventbus.EventBus;
 import com.willwinder.rtp.model.Key;
+import com.willwinder.rtp.model.KeyboardState;
 import com.willwinder.rtp.util.NoteEvent;
 
 import javax.sound.midi.MidiMessage;

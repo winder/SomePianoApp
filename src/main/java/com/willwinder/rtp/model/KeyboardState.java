@@ -1,4 +1,4 @@
-package com.willwinder.rtp;
+package com.willwinder.rtp.model;
 
 import com.willwinder.rtp.model.Key;
 

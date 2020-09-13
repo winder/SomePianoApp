@@ -4,7 +4,7 @@
     <module name="rtp" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="com.willwinder.rtp.*" />
+        <option name="PATTERN" value="com.willwinder.rtp.model.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

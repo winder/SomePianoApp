@@ -1,6 +1,7 @@
-package com.willwinder.rtp.graphics;
+package com.willwinder.rtp.graphics.renderables;
 
 import com.google.common.eventbus.Subscribe;
+import com.willwinder.rtp.graphics.Renderable;
 import com.willwinder.rtp.model.TimelineParams;
 import com.willwinder.rtp.util.NoteEvent;
 import javafx.scene.canvas.GraphicsContext;
@@ -41,18 +42,23 @@ public class TimelineSparks implements Renderable {
      */
     @Subscribe
     public void noteEvent(NoteEvent event) {
+        int offset = 0;
+        if (!this.params.out) {
+            offset = +3000;
+        }
+        final int finalOffset = offset;
         synchronized(sparks) {
             long now = System.currentTimeMillis();
             // Add a new spark on press.
             if (event.active) {
-                TimelineSpark spark = new TimelineSpark(now, -1, false, event.key.key);
+                TimelineSpark spark = new TimelineSpark(now + finalOffset, -1, false, event.key.key);
                 sparks.computeIfAbsent(event.key.key, k -> new ArrayList<>())
                         .add(spark);
             }
             // Set end time on release.
             else {
                 sparks.computeIfPresent(event.key.key, (k, v) -> {
-                    v.get(v.size() - 1).endTimeMs = now;
+                    v.get(v.size() - 1).endTimeMs = now + finalOffset;
                     return v;
                 });
             }
@@ -76,7 +82,12 @@ public class TimelineSparks implements Renderable {
      */
     @Override
     public void draw(GraphicsContext gc, DrawParams p) throws RenderableException {
-        long topMs = p.nowMs - this.params.timelineDuration.toMillis();
+        long topMs = 0;
+        if(this.params.out) {
+            topMs = p.nowMs - this.params.timelineDuration.toMillis();
+        } else {
+            topMs = p.nowMs + this.params.timelineDuration.toMillis();
+        }
 
         // Process the sparks
         synchronized (sparks) {
@@ -85,13 +96,15 @@ public class TimelineSparks implements Renderable {
                 while (iter.hasNext()) {
                     var spark = iter.next();
 
+                    long ageCutoff = this.params.out ? topMs : p.nowMs;
+
                     // If it's too old, remove it.
-                    if (spark.endTimeMs > 0 && spark.endTimeMs < topMs) {
+                    if (spark.endTimeMs > 0 && spark.endTimeMs < ageCutoff) {
                         iter.remove();
                     }
                     // Otherwise draw it.
                     else {
-                        drawSpark(gc, spark, topMs, p.canvasWidth, p.canvasHeight);
+                        drawSpark(gc, spark, topMs, p.canvasWidth, p.canvasHeight, p.nowMs);
                     }
                 }
             }
@@ -106,17 +119,13 @@ public class TimelineSparks implements Renderable {
      * @param w
      * @param h
      */
-    private void drawSpark(GraphicsContext gc, TimelineSpark spark, long topMs, double w, double h) {
-        // Ended after timeline duration, don't render.
-        if (spark.endTimeMs > 0 && spark.endTimeMs < topMs) {
-            return;
-        }
-
+    private void drawSpark(GraphicsContext gc, TimelineSpark spark, long topMs, double w, double h, long now) {
         // Get X dimensions (key width)
         var points = this.params.keyPointCache.getPoints(spark.key);
 
-        // TODO: Handle unknown points
+        // TODO: Handle unknown keys
         if (points == null) return;
+
         double xMin = Double.MAX_VALUE;
         double xMax = Double.MIN_VALUE;
         for (double p : points.xPoints) {
@@ -126,17 +135,46 @@ public class TimelineSparks implements Renderable {
 
         // Get Y dimensions (key press timestamps)
         double timelineHeight = h - params.keyPointCache.getWhiteKeyHeight() - params.yTopMargin;
-        double yMin = 0;
-        double yMax = h - params.keyPointCache.getWhiteKeyHeight();
-        if (spark.endTimeMs > 0) {
-            long range = spark.endTimeMs - topMs;
-            yMax = range / (double) this.params.timelineDuration.toMillis() * timelineHeight;
-        }
-        if (spark.startTimeMs > topMs) {
-            long range = spark.startTimeMs - topMs;
-            yMin = range / (double) this.params.timelineDuration.toMillis() * timelineHeight;
-        }
+        long duration = this.params.timelineDuration.toMillis();
 
+        double yMax = 0.0;
+        double yMin = 0.0;
+
+        // Notes are outgoing
+        if (this.params.out) {
+            if (spark.endTimeMs > 0) {
+                long range = spark.endTimeMs - topMs;
+                yMax = range / (double) duration * timelineHeight;
+            } else {
+                yMax = timelineHeight;
+            }
+
+            if (spark.startTimeMs > topMs) {
+                long range = spark.startTimeMs - topMs;
+                yMin = range / (double) duration * timelineHeight;
+            } else {
+                yMin = 0;
+            }
+        }
+        // Notes are incomming
+        else {
+            if (spark.endTimeMs > 0) {
+                long range = topMs - spark.endTimeMs;
+                yMax = range / (double) duration * timelineHeight;
+            } else {
+                yMax = 0;
+            }
+
+            //System.out.println("Diff topms - now: " + (topMs - now));
+            //System.out.println("Diff topms - start: " + (topMs - spark.startTimeMs));
+            //System.out.println("Diff start - now: " + (spark.startTimeMs - now));
+            if (spark.startTimeMs > now) {
+                long range = topMs - spark.startTimeMs;
+                yMin = range / (double) duration * timelineHeight;
+            } else {
+                yMin = timelineHeight;
+            }
+        }
 
         gc.setFill(Color.RED);
 
@@ -145,5 +183,26 @@ public class TimelineSparks implements Renderable {
                 params.yTopMargin + yMin,
                 Math.min(xMax - xMin, w - params.xRightMargin),
                 Math.min(yMax - yMin, h - params.keyPointCache.getWhiteKeyHeight()));
+    }
+
+    private static double getYEndOffset(long timeMs, long topMs, double timelineHeight, long duration) {
+        long diff = timeMs - topMs;
+        if (timeMs > 0) {
+            long range = timeMs - topMs;
+            return range / (double) duration * timelineHeight;
+        } else {
+            return timelineHeight;
+        }
+    }
+
+    private static double getYStartOffset(long timeMs, long topMs, double timelineHeight, long duration) {
+        long diff = timeMs - topMs;
+        if (timeMs > topMs) {
+            long range = timeMs - topMs;
+            return range / (double) duration * timelineHeight;
+        } else {
+            return 0;
+        }
+
     }
 }

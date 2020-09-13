@@ -1,7 +1,9 @@
-package com.willwinder.rtp.graphics;
+package com.willwinder.rtp.graphics.renderables;
 
 import com.google.common.eventbus.Subscribe;
-import com.willwinder.rtp.KeyboardState;
+import com.willwinder.rtp.model.KeyboardState;
+import com.willwinder.rtp.graphics.KeyPointCache;
+import com.willwinder.rtp.graphics.Renderable;
 import com.willwinder.rtp.model.Key;
 import com.willwinder.rtp.util.NoteEvent;
 import javafx.scene.canvas.GraphicsContext;
