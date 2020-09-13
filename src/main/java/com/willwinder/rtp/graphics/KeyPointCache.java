@@ -8,69 +8,97 @@ public class KeyPointCache {
     private final HashMap<Integer, KeyPointCache.KeyPoints> cache = new HashMap<>();
 
     private double height;
+    private double width;
+
     private double leftMargin;
     private double rightMargin;
     private double whiteKeyHeight;
     private double whiteKeyWidth;
     private double blackKeyHeight;
+    private double blackKeyRatio;
     private double blackKeyWidth;
+    private double blackKeyHeightRatio;
+    private double whiteKeyHeightRatio;
     private double padding;
     public int firstKey;
     public int numKeys;
-    private double scale;
 
+    /**
+     * @param height height of the canvas to allow positioning keys at the bottom.
+     * @param width width of the canvas to compute the key scale.
+     * @param leftMargin margin to the left of the keys.
+     * @param rightMargin margin to the right of the keys
+     * @param blackKeyWidthRatio ratio between white key width and black key width.
+     * @param blackKeyHeightRatio ratio between white key height and black key height.
+     * @param whiteKeyHeightRatio ratio from white key width to white key height.
+     * @param padding padding around keys, removed from the size, not added.
+     * @param firstKey the first key on keyboard, MIDI key code (A0 = 21).
+     * @param numKeys number of keys on keyboard.
+     */
     public KeyPointCache(
             double height,
+            double width,
             double leftMargin,
             double rightMargin,
-            double blackKeyWidth,
-            double blackKeyHeight,
-            double whiteKeyWidth,
-            double whiteKeyHeight,
+            double blackKeyWidthRatio,
+            double blackKeyHeightRatio,
+            double whiteKeyHeightRatio,
             double padding,
-            double scale,
             int firstKey,
             int numKeys) {
         this.height = height;
         this.leftMargin = leftMargin;
         this.rightMargin = rightMargin;
-        this.whiteKeyHeight = whiteKeyHeight;
-        this.whiteKeyWidth = whiteKeyWidth;
-        this.blackKeyHeight = blackKeyHeight;
-        this.blackKeyWidth = blackKeyWidth;
+        this.blackKeyHeightRatio = blackKeyHeightRatio;
+        this.whiteKeyHeightRatio = whiteKeyHeightRatio;
+        this.blackKeyRatio = blackKeyWidthRatio;
         this.padding = padding;
         this.firstKey = firstKey;
         this.numKeys = numKeys;
-        this.scale = scale;
 
-        reset(height, scale);
+        reset(height, width);
     }
 
     public double getBlackKeyHeight() {
-        return blackKeyHeight * scale;
+        return blackKeyHeight;
     }
 
     public double getBlackKeyWidth() {
-        return blackKeyWidth * scale;
+        return blackKeyWidth;
     }
 
     public double getWhiteKeyHeight() {
-        return whiteKeyHeight * scale;
+        return whiteKeyHeight;
     }
 
     public double getWhiteKeyWidth() {
-        return whiteKeyWidth * scale;
+        return whiteKeyWidth;
     }
 
-    public void reset(double newHeight, double newScale) {
+    public void reset(double newHeight, double newWidth) {
         // If nothing changed and this isn't the first call to reset, this is a no-op.
-        if (newScale == scale &&  newHeight == height && this.cache.size() != 0) return;
+        if (newWidth == width &&  newHeight == height && this.cache.size() != 0) return;
 
-        this.scale = newScale;
         this.height = newHeight;
+        this.width = newWidth;
         cache.clear();
 
-        Key.Note note = Key.Note.noteForKey(this.firstKey);
+        // Compute whiteKeyWidth
+        Key.Note note = Key.Note.noteForKey(firstKey);
+        int numWhiteKeys = 0;
+        for (int i = 0; i < numKeys; i++) {
+            if (note.isWhiteKey()) {
+                numWhiteKeys++;
+            }
+            note = note.nextNote();
+        }
+
+        whiteKeyWidth = (width - leftMargin - rightMargin) / (double) numWhiteKeys;
+        blackKeyWidth = whiteKeyWidth * blackKeyRatio;
+        whiteKeyHeight = whiteKeyWidth * whiteKeyHeightRatio;
+        blackKeyHeight = whiteKeyHeight * blackKeyHeightRatio;
+
+        note = Key.Note.noteForKey(this.firstKey);
         var xStep = getWhiteKeyWidth() / 2.0;
         var xCenter = leftMargin + xStep;
         for (int i = this.firstKey; i < this.firstKey + numKeys; i++) {

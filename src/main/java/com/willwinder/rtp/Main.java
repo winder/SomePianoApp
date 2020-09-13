@@ -164,16 +164,18 @@ public class Main extends Application {
                 1);
         KeyPointCache keyPointCache = new KeyPointCache(
                 DEFAULT_HEIGHT,
-                0.0,
-                0.0,
-                12,
-                65,
-                22.3,
-                100,
-                1,
+                DEFAULT_WIDTH,
+                50.0,
+                50.0,
+                0.53,
+                0.65,
+                4.5,
                 1,
                 36,
                 49);
+                // 88 key piano parameters.
+                //21,
+                //88);
 
         TimelineParams timelineParams = new TimelineParams(
                 true,

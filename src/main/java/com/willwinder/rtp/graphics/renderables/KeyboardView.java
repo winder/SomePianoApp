@@ -39,7 +39,7 @@ public class KeyboardView implements Renderable {
     private final Set<Integer> updatedKeys = new HashSet<>();
     private final KeyboardState state;
     private final KeyboardViewParams params;
-    private double currentScale = 0.0;
+    private double currentWidth = 0.0;
     private final KeyPointCache keyPointCache;
 
     public KeyboardView(KeyboardState state, KeyboardViewParams params, KeyPointCache cache) {
@@ -91,9 +91,9 @@ public class KeyboardView implements Renderable {
      */
     @Override
     public void draw(GraphicsContext gc, DrawParams p) {
-        if (p.reset || p.scale != this.currentScale) {
-            this.currentScale = p.scale;
-            this.keyPointCache.reset(gc.getCanvas().getHeight(), p.scale);
+        if (p.reset || p.canvasWidth != this.currentWidth) {
+            this.currentWidth = p.canvasWidth;
+            this.keyPointCache.reset(p.canvasHeight, p.canvasWidth);
 
             // reset all keys
             Key.Note note = Key.Note.noteForKey(this.keyPointCache.firstKey);

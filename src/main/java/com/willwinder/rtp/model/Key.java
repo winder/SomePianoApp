@@ -44,7 +44,7 @@ public class Key {
 
         /**
          * Given a key number returns the corresponding note.
-         * @param key index of key starting with C1 = 0.
+         * @param key index of key starting with A0 = 21.
          * @return the corresponding Note enum.
          */
         public static Note noteForKey(int key) {
