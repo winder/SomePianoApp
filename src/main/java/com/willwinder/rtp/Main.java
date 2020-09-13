@@ -1,23 +1,32 @@
 package com.willwinder.rtp;
 
+import com.google.common.graph.Graph;
 import com.willwinder.rtp.controller.AnimationController;
 import com.willwinder.rtp.graphics.*;
 import com.willwinder.rtp.graphics.renderables.*;
 import com.willwinder.rtp.model.KeyboardState;
 import com.willwinder.rtp.model.TimelineParams;
+import com.willwinder.rtp.util.BorderToolBar;
 import com.willwinder.rtp.util.CanvasPane;
 
 import com.google.common.eventbus.EventBus;
+import com.willwinder.rtp.util.GraphicButton;
 import com.willwinder.rtp.util.KeyboardReceiver;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import org.kordamp.ikonli.fontawesome.FontAwesome;
+import org.kordamp.ikonli.fontawesome.FontAwesomeIkonHandler;
+
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -114,26 +123,18 @@ public class Main extends Application {
         GraphicsContext gc = canvas.canvas.getGraphicsContext2D();
         BorderPane canvasPane = new BorderPane(canvas);
 
-        // Toolbar pane
-        ToolBar leftToolBar = new ToolBar();
-        ToolBar centerToolBar = new ToolBar();
-        ToolBar rightToolBar = new ToolBar();
-        leftToolBar.opacityProperty().setValue(0.15);
-        centerToolBar.opacityProperty().setValue(0.15);
-        rightToolBar.opacityProperty().setValue(0.15);
+        BorderToolBar toolBar = new BorderToolBar(45, 0.25);
 
-        // Align the 3 toolbar areas
-        HBox toolBarAlignmentPane = new HBox(leftToolBar, centerToolBar, rightToolBar);
-        toolBarAlignmentPane.setAlignment(Pos.CENTER);
-        HBox.setHgrow(leftToolBar, Priority.ALWAYS);
-        HBox.setHgrow(centerToolBar, Priority.ALWAYS);
+        // Settings button
+        FontIcon settingsIcon = FontIcon.of(FontAwesome.SLIDERS, 30, Color.WHITE);
+        Button settings = new GraphicButton(settingsIcon, Color.DARKGRAY);
+        settings.setOnAction(e -> System.out.println("View settings"));
 
-        BorderPane toolBarPane = new BorderPane();
-        toolBarPane.setTop(toolBarAlignmentPane);
+        toolBar.addRight(settings);
 
         // Stack UI layers.
         StackPane mainPane = new StackPane();
-        mainPane.getChildren().addAll(canvasPane, toolBarPane);
+        mainPane.getChildren().addAll(canvasPane, toolBar);
 
         Scene scene = new Scene(mainPane, DEFAULT_WIDTH, DEFAULT_HEIGHT, Color.BLACK);
         stage.setTitle("RealTime Piano");
