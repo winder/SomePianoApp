@@ -7,6 +7,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 
 public class BorderToolBar extends BorderPane {
     private final ToolBar left;
@@ -21,10 +22,12 @@ public class BorderToolBar extends BorderPane {
         center = new ToolBar();
         right = new ToolBar();
 
-        String style = "-fx-background-color: rgba(100, 100, 100, " + opacity + ");";
-        left.setStyle(style);
-        center.setStyle(style);
-        right.setStyle(style);
+        if (opacity != 1.0) {
+            String style = "-fx-background-color: rgba(100, 100, 100, " + opacity + ");";
+            left.setStyle(style);
+            center.setStyle(style);
+            right.setStyle(style);
+        }
 
         left.setPrefHeight(height);
         center.setPrefHeight(height);

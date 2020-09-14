@@ -27,6 +27,9 @@ public class KeyPointCache {
         this.params = params;
         this.height = 0.0;
         this.width = 0.0;
+
+        params.numKeys.addListener((ob, o, n) -> reset(this.width, this.height, true));
+        params.firstKey.addListener((ob, o, n) -> reset(this.width, this.height, true));
     }
 
     public double getBlackKeyHeight() {
@@ -51,8 +54,12 @@ public class KeyPointCache {
      * @param newWidth new canvas width.
      */
     public void reset(double newHeight, double newWidth) {
+        reset(newHeight, newWidth, false);
+    }
+
+    private void reset(double newHeight, double newWidth, boolean force) {
         // If nothing changed and this isn't the first call to reset, this is a no-op.
-        if (newWidth == width &&  newHeight == height && this.cache.size() != 0) return;
+        if (!force && newWidth == width &&  newHeight == height && this.cache.size() != 0) return;
 
         this.height = newHeight;
         this.width = newWidth;

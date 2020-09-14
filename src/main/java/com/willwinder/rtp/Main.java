@@ -1,8 +1,14 @@
 package com.willwinder.rtp;
 
+import com.dlsc.formsfx.model.structure.Field;
+import com.dlsc.formsfx.model.structure.Form;
+
+import com.dlsc.formsfx.model.structure.Group;
+import com.dlsc.formsfx.model.validators.IntegerRangeValidator;
 import com.willwinder.rtp.controller.AnimationController;
 import com.willwinder.rtp.graphics.*;
 import com.willwinder.rtp.graphics.renderables.*;
+import com.willwinder.rtp.model.KeyboardState;
 import com.willwinder.rtp.model.params.AllParams;
 import com.willwinder.rtp.model.params.BPMParams;
 import com.willwinder.rtp.model.params.KeyPointCacheParams;
@@ -13,13 +19,17 @@ import com.willwinder.rtp.util.CanvasPane;
 import com.google.common.eventbus.EventBus;
 import com.willwinder.rtp.util.GraphicButton;
 import com.willwinder.rtp.util.KeyboardReceiver;
+import com.willwinder.rtp.view.SettingsView;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.fontawesome.FontAwesome;
 
@@ -105,7 +115,7 @@ public class Main extends Application {
         // Settings button
         FontIcon settingsIcon = FontIcon.of(FontAwesome.SLIDERS, 30, Color.WHITE);
         Button settings = new GraphicButton(settingsIcon, Color.DARKGRAY);
-        settings.setOnAction(e -> System.out.println("View settings"));
+        settings.setOnAction(e -> showSettings(allParams, stage));
 
         FontIcon arrowIcon = FontIcon.of(FontAwesome.ARROWS_V, 30, Color.WHITE);
         Button toggleOut = new GraphicButton(arrowIcon, Color.DARKGRAY);
@@ -131,6 +141,10 @@ public class Main extends Application {
 
         // Display the GUI
         stage.show();
+    }
+
+    private void showSettings(AllParams params, Stage parent) {
+        var view = new SettingsView(params, parent);
     }
 
     /**

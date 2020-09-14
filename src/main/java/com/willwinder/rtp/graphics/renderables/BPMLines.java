@@ -25,7 +25,7 @@ public class BPMLines implements Renderable {
     @Override
     public void draw(GraphicsContext gc, DrawParams p) throws RenderableException {
         long msPerBeat = Duration.ofMinutes(1).toMillis() / params.bpm.get();
-        long duration = this.params.timelineParams.timelineDuration.get().toMillis();
+        long duration = this.params.timelineParams.timelineDurationMs.get();
         double timelineHeight = this.params.timelineParams.getHeight(p.canvasHeight);
         if (p.reset || this.yBeatOffset == 0.0) {
             // recompute yBeatOffset

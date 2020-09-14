@@ -11,6 +11,7 @@ plugins {
 modularity.disableEffectiveArgumentsAdjustment()
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
@@ -18,11 +19,23 @@ sourceCompatibility = "14"
 targetCompatibility = "14"
 
 dependencies {
-    implementation 'com.google.guava:guava:29.0-jre'
+    compile 'com.google.guava:guava:29.0-jre'
+
+    compile 'org.apache.logging.log4j:log4j-core:2.13.1'
+    compile 'org.apache.logging.log4j:log4j-api:2.13.1'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.13.1'
 
     // Icons
-    implementation 'org.kordamp.ikonli:ikonli-javafx:11.5.0'
-    implementation 'org.kordamp.ikonli:ikonli-fontawesome-pack:11.5.0'
+    compile 'org.kordamp.ikonli:ikonli-javafx:11.5.0'
+    compile 'org.kordamp.ikonli:ikonli-fontawesome-pack:11.5.0'
+
+
+
+    compile 'com.dlsc.formsfx:formsfx-core:11.3.2'
+    // Preferences
+    //compile 'com.dlsc.preferencesfx:preferencesfx-core:11.6.0'
+    //compile 'de.jensd:fontawesomefx-commons:11.0'
+    //compile 'de.jensd:fontawesomefx-fontawesome:4.7.0-11'
 }
 
 application {
@@ -32,7 +45,7 @@ application {
 
 javafx {
     version = 14
-    modules = ['javafx.controls', 'javafx.graphics', 'javafx.base']
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 /*

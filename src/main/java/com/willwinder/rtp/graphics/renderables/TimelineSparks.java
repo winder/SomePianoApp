@@ -83,7 +83,7 @@ public class TimelineSparks implements Renderable {
     @Override
     public void draw(GraphicsContext gc, DrawParams p) throws RenderableException {
         long topMs = 0;
-        long duration = this.params.timelineDuration.get().toMillis();
+        long duration = this.params.timelineDurationMs.get();
         if(this.params.out.get()) {
             topMs = p.nowMs - duration;
         } else {
@@ -137,7 +137,7 @@ public class TimelineSparks implements Renderable {
 
         // Get Y dimensions (key press timestamps)
         double timelineHeight = h - params.keyPointCache.getWhiteKeyHeight();
-        long duration = this.params.timelineDuration.get().toMillis();
+        long duration = this.params.timelineDurationMs.get();
 
         double yMax = 0.0;
         double yMin = 0.0;

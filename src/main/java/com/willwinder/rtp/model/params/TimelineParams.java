@@ -1,15 +1,12 @@
 package com.willwinder.rtp.model.params;
 
 import com.willwinder.rtp.graphics.KeyPointCache;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 
 import java.time.Duration;
 
 public class TimelineParams {
-    public final ObjectProperty<Duration> timelineDuration;
+    public final IntegerProperty timelineDurationMs;
     public final KeyPointCache keyPointCache;
     public final BooleanProperty out;
 
@@ -22,7 +19,7 @@ public class TimelineParams {
      */
     public TimelineParams(boolean out, Duration timelineDuration, KeyPointCache keyPointCache) {
         this.out = new SimpleBooleanProperty(out);
-        this.timelineDuration = new SimpleObjectProperty<>(timelineDuration);
+        this.timelineDurationMs = new SimpleIntegerProperty((int)timelineDuration.toMillis());
         this.keyPointCache = keyPointCache;
     }
 
