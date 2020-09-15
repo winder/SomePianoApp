@@ -36,7 +36,7 @@ public class KeyboardReceiver implements Receiver, KeyboardState {
                     activeKeys.remove(k.key);
                 }
             }
-            eventBus.post(new NoteEvent(k, k.isActive()));
+            eventBus.post(new NoteEvent(k, 99, System.currentTimeMillis()));
         });
     }
 

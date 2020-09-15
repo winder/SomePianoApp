@@ -13,6 +13,7 @@ public class KeyPointCache {
     // Cache these to trigger recomputing the cache.
     private double height;
     private double width;
+    private int paramHashCache;
 
     // Computed values
     private double whiteKeyHeight;
@@ -27,9 +28,7 @@ public class KeyPointCache {
         this.params = params;
         this.height = 0.0;
         this.width = 0.0;
-
-        params.numKeys.addListener((ob, o, n) -> reset(this.width, this.height, true));
-        params.firstKey.addListener((ob, o, n) -> reset(this.width, this.height, true));
+        this.paramHashCache = 0;
     }
 
     public double getBlackKeyHeight() {
@@ -54,15 +53,15 @@ public class KeyPointCache {
      * @param newWidth new canvas width.
      */
     public void reset(double newHeight, double newWidth) {
-        reset(newHeight, newWidth, false);
-    }
-
-    private void reset(double newHeight, double newWidth, boolean force) {
         // If nothing changed and this isn't the first call to reset, this is a no-op.
-        if (!force && newWidth == width &&  newHeight == height && this.cache.size() != 0) return;
+        if (this.width == newWidth
+                && this.height == newHeight
+                && this.cache.size() != 0
+                && this.paramHashCache == params.hashCode()) return;
 
         this.height = newHeight;
         this.width = newWidth;
+        this.paramHashCache = params.hashCode();
         cache.clear();
 
         // Compute whiteKeyWidth

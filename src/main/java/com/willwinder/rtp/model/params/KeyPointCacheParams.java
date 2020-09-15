@@ -4,6 +4,9 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+
+import java.util.Objects;
 
 public class KeyPointCacheParams {
     public final DoubleProperty leftMargin;
@@ -15,6 +18,7 @@ public class KeyPointCacheParams {
     public final IntegerProperty firstKey;
     public final IntegerProperty numKeys;
 
+    private int hashCache = 0;
 
     /**
      * @param leftMargin          margin to the left of the keys.
@@ -42,5 +46,33 @@ public class KeyPointCacheParams {
         this.padding = new SimpleDoubleProperty(padding);
         this.firstKey = new SimpleIntegerProperty(firstKey);
         this.numKeys = new SimpleIntegerProperty(numKeys);
+
+        // Reset the hash cache when something changes.
+        ChangeListener listener = (ChangeListener<Number>) (observable, oldValue, newValue) -> hashCache = 0;
+        this.leftMargin.addListener(listener);
+        this.rightMargin.addListener(listener);
+        this.blackKeyWidthRatio.addListener(listener);
+        this.blackKeyHeightRatio.addListener(listener);
+        this.whiteKeyHeightRatio.addListener(listener);
+        this.padding.addListener(listener);
+        this.firstKey.addListener(listener);
+        this.numKeys.addListener(listener);
+    }
+
+    @Override
+    public int hashCode() {
+        if (hashCache == 0) {
+            hashCache = Objects.hash(
+                    this.leftMargin.get(),
+                    this.rightMargin.get(),
+                    this.blackKeyWidthRatio.get(),
+                    this.blackKeyHeightRatio.get(),
+                    this.whiteKeyHeightRatio.get(),
+                    this.padding.get(),
+                    this.firstKey.get(),
+                    this.numKeys.get());
+        }
+
+        return hashCache;
     }
 }

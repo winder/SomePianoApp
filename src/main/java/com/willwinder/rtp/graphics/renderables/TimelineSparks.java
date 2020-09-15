@@ -2,6 +2,7 @@ package com.willwinder.rtp.graphics.renderables;
 
 import com.google.common.eventbus.Subscribe;
 import com.willwinder.rtp.graphics.Renderable;
+import com.willwinder.rtp.model.KeyboardState;
 import com.willwinder.rtp.model.params.TimelineParams;
 import com.willwinder.rtp.util.NoteEvent;
 import javafx.scene.canvas.GraphicsContext;
@@ -19,7 +20,9 @@ public class TimelineSparks implements Renderable {
     private static Duration CLEANUP_INTERVAL = Duration.ofSeconds(5);
 
     private final TimelineParams params;
+    private KeyboardState state;
     private final HashMap<Integer, List<TimelineSpark>> sparks = new HashMap<>();
+
     private long nextCleanupTime = 0;
 
     private static class TimelineSpark {
@@ -27,41 +30,15 @@ public class TimelineSparks implements Renderable {
         // Not final because the end time is updated later.
         private long endTimeMs;
         private final boolean sustain;
+        private final int track;
         private final int key;
 
-        private TimelineSpark(long startTime, long endTime, boolean sustain, int key) {
+        private TimelineSpark(long startTime, long endTime, boolean sustain, int track, int key) {
             this.startTimeMs = startTime;
             this.endTimeMs = endTime;
             this.sustain = sustain;
+            this.track = track;
             this.key = key;
-        }
-    }
-
-    /**
-     * Used to notify the timeline of note begin and end events.
-     */
-    @Subscribe
-    public void noteEvent(NoteEvent event) {
-        int offset = 0;
-        if (!this.params.out.get()) {
-            offset = +3000;
-        }
-        final int finalOffset = offset;
-        synchronized(sparks) {
-            long now = System.currentTimeMillis();
-            // Add a new spark on press.
-            if (event.active) {
-                TimelineSpark spark = new TimelineSpark(now + finalOffset, -1, false, event.key.key);
-                sparks.computeIfAbsent(event.key.key, k -> new ArrayList<>())
-                        .add(spark);
-            }
-            // Set end time on release.
-            else {
-                sparks.computeIfPresent(event.key.key, (k, v) -> {
-                    v.get(v.size() - 1).endTimeMs = now + finalOffset;
-                    return v;
-                });
-            }
         }
     }
 
@@ -69,9 +46,33 @@ public class TimelineSparks implements Renderable {
      * Create the timeline spark renderable.
      * @param params
      */
-    public TimelineSparks(TimelineParams params) {
+    public TimelineSparks(TimelineParams params, KeyboardState state) {
         this.params = params;
+        this.state = state;
         this.nextCleanupTime = System.currentTimeMillis() + CLEANUP_INTERVAL.toMillis();
+    }
+
+    /**
+     * Used to notify the timeline of note begin and end events.
+     */
+    @Subscribe
+    public void noteEvent(NoteEvent event) {
+        synchronized(sparks) {
+            long now = System.currentTimeMillis();
+            // Add a new spark on press.
+            if (event.key.isActive()) {
+                TimelineSpark spark = new TimelineSpark(event.timestampMs, -1, false, event.track, event.key.key);
+                sparks.computeIfAbsent(event.key.key, k -> new ArrayList<>())
+                        .add(spark);
+            }
+            // Set end time on release.
+            else {
+                sparks.computeIfPresent(event.key.key, (k, v) -> {
+                    v.get(v.size() - 1).endTimeMs = event.timestampMs;
+                    return v;
+                });
+            }
+        }
     }
 
     /**
@@ -103,7 +104,7 @@ public class TimelineSparks implements Renderable {
                     if (spark.endTimeMs > 0 && spark.endTimeMs < ageCutoff) {
                         iter.remove();
                     }
-                    // Otherwise draw it.
+                    // Draw it if the start time is before the cutoff.
                     else {
                         drawSpark(gc, spark, topMs, p.canvasWidth, p.canvasHeight, p.nowMs);
                     }
@@ -142,6 +143,7 @@ public class TimelineSparks implements Renderable {
         double yMax = 0.0;
         double yMin = 0.0;
 
+        boolean isNoteActive = false;
         // Notes are outgoing
         if (this.params.out.get()) {
             if (spark.endTimeMs > 0) {
@@ -164,18 +166,30 @@ public class TimelineSparks implements Renderable {
                 long range = topMs - spark.endTimeMs;
                 yMax = range / (double) duration * timelineHeight;
             } else {
-                yMax = 0;
+                // If there is no end time, this spark is probably from the keyboard. No need to show it.
+                return;
+                //yMax = timelineHeight;
             }
 
             if (spark.startTimeMs > now) {
                 long range = topMs - spark.startTimeMs;
                 yMin = range / (double) duration * timelineHeight;
             } else {
+                isNoteActive = true;
                 yMin = timelineHeight;
             }
         }
 
-        gc.setFill(Color.RED);
+        boolean isKeyActive = state.getActiveKeyCodes().contains(spark.key);
+        boolean notePressed = isNoteActive && isKeyActive;
+
+        Color fillColor = switch(spark.track) {
+            case 1 -> notePressed ? Color.ORANGE : Color.YELLOW;
+            case 2 -> notePressed ? Color.VIOLET : Color.BLUE;
+            case 99 -> Color.RED;
+            default -> Color.ORANGE;
+        };
+        gc.setFill(fillColor);
 
         gc.fillRect(
                 xMin,

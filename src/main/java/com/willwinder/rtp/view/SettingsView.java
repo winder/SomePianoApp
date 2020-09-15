@@ -2,7 +2,6 @@ package com.willwinder.rtp.view;
 
 import com.dlsc.formsfx.model.structure.Field;
 import com.dlsc.formsfx.model.structure.Form;
-import com.dlsc.formsfx.model.structure.Group;
 import com.dlsc.formsfx.model.structure.Section;
 import com.dlsc.formsfx.model.validators.IntegerRangeValidator;
 import com.dlsc.formsfx.view.renderer.FormRenderer;
@@ -11,14 +10,14 @@ import com.willwinder.rtp.model.params.BPMParams;
 import com.willwinder.rtp.model.params.KeyPointCacheParams;
 import com.willwinder.rtp.model.params.TimelineParams;
 import com.willwinder.rtp.util.BorderToolBar;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import static com.willwinder.rtp.Constants.DEFAULT_WIDTH;
 
 public class SettingsView extends Dialog {
     private final AllParams params;
@@ -34,19 +33,19 @@ public class SettingsView extends Dialog {
         BorderToolBar toolbar = new BorderToolBar(50, 1.0);
         Button save = new Button("Save");
         Button reset = new Button("Reset");
-        Button cancel = new Button("Cancel");
+        Button close = new Button("Close");
 
         save.disableProperty().bind(form.persistableProperty().not());
         reset.disableProperty().bind(form.persistableProperty().not());
 
         reset.setOnAction(e -> form.reset());
         save.setOnAction(e -> form.persist());
-        cancel.setOnAction(e -> {
+        close.setOnAction(e -> {
             form.reset();
             dialog.close();
         });
 
-        toolbar.addLeft(cancel);
+        toolbar.addLeft(close);
         toolbar.addCenter(reset);
         toolbar.addRight(save);
 
@@ -55,7 +54,7 @@ public class SettingsView extends Dialog {
         content.getChildren().add(toolbar);
         content.getChildren().add(formView);
 
-        Scene scene = new Scene(content, 500, 400);
+        Scene scene = new Scene(content, DEFAULT_WIDTH, 400);
         dialog.setScene(scene);
         dialog.initOwner(parent);
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -105,12 +104,5 @@ public class SettingsView extends Dialog {
             ).title("Timeline")
 
         );
-
-        /*
-        Tab t = new Tab("Keyboard");
-        var form = new FormRenderer(formInstance);
-        t.setContent(form);
-        return t;
-         */
     }
 }

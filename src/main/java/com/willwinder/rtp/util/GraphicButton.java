@@ -13,32 +13,37 @@ import org.kordamp.ikonli.javafx.FontIcon;
 /**
  * A button with a FontIcon graphic which changes color when pressed.
  */
-public class GraphicButton extends Button implements ChangeListener<Boolean> {
+public class GraphicButton extends Button {
     private final FontIcon icon;
     private final Paint iconColor;
     private final Paint activeIconColor;
+    private final Paint disabledIconColor;
 
     public GraphicButton(FontIcon icon, Color activeColor) {
-        this("", icon, activeColor);
+        this(icon, activeColor, activeColor);
     }
 
-    public GraphicButton(String label, FontIcon icon, Color activeColor) {
+    public GraphicButton(FontIcon icon, Color activeColor, Color disabledIconColor) {
+        this("", icon, activeColor, activeColor);
+    }
+
+    public GraphicButton(String label, FontIcon icon, Color activeColor, Color disabledColor) {
         super(label);
 
         this.icon = icon;
         this.iconColor = icon.getIconColor();
         this.activeIconColor = activeColor;
+        this.disabledIconColor = disabledColor;
+
         //Button settings = new Button();
         setStyle("-fx-background-color: transparent");
         setGraphic(icon);
         setPadding(new Insets(0, 0, 0, 0));
 
-
-        pressedProperty().addListener(this);
+        pressedProperty().addListener(this::pressed);
     }
 
-    @Override
-    public void changed(ObservableValue observable, Boolean wasPressed, Boolean pressed) {
+    public void pressed(ObservableValue observable, Boolean wasPressed, Boolean pressed) {
         if (pressed) {
             icon.setIconColor(activeIconColor);
         } else {

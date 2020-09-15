@@ -1,5 +1,6 @@
 package com.willwinder.rtp.controller;
 
+import com.willwinder.rtp.graphics.KeyPointCache;
 import com.willwinder.rtp.graphics.Renderable;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.GraphicsContext;
@@ -18,11 +19,16 @@ import static com.willwinder.rtp.Constants.DEFAULT_WIDTH;
  */
 public class AnimationController extends AnimationTimer {
     private final GraphicsContext gc;
+    private KeyPointCache keyPointCache;
     private final List<Renderable> renderableList = new ArrayList<>();
-    private double w, h = 0.0;
 
-    public AnimationController(GraphicsContext gc) {
+    // For detecting a reset is required.
+    private double w, h = 0.0;
+    private int currentKeyPointHash = 0;
+
+    public AnimationController(GraphicsContext gc, KeyPointCache keyPointCache) {
         this.gc = gc;
+        this.keyPointCache = keyPointCache;
     }
 
     public void addRenderable(Renderable r) {
@@ -41,11 +47,13 @@ public class AnimationController extends AnimationTimer {
         double width = gc.getCanvas().getWidth();
 
         boolean reset = false;
-        if (w != width || h != height) {
+        int kpHash = this.keyPointCache.params.hashCode();
+        if (w != width || h != height || currentKeyPointHash != kpHash) {
             gc.setFill(Color.BLACK);
             gc.fillRect(0, 0, width, height);
             this.w = width;
             this.h = height;
+            this.currentKeyPointHash = kpHash;
             reset = true;
         }
 

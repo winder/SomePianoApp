@@ -2,6 +2,7 @@ package com.willwinder.rtp.util;
 
 import com.willwinder.rtp.model.Key;
 
+import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import java.util.Arrays;
@@ -57,6 +58,12 @@ public class Util {
             Key k = new Key(dataToNote(sm.getData1()), dataToOctave(sm.getData1()), sm.getCommand(), sm.getStatus(), sm.getData1(), sm.getData2());
             return Optional.of(k);
         }
+        /*
+        if (message instanceof MetaMessage) {
+            MetaMessage mm = (MetaMessage)message;
+            mm.
+        }
+         */
 
         return Optional.empty();
     }

@@ -20,7 +20,6 @@ public class KeyboardView implements Renderable {
 
     private final Set<Integer> updatedKeys = new HashSet<>();
     private final KeyboardState state;
-    private double currentWidth = 0.0;
     private final KeyPointCache keyPointCache;
 
     public KeyboardView(KeyboardState state, KeyPointCache cache) {
@@ -71,8 +70,7 @@ public class KeyboardView implements Renderable {
      */
     @Override
     public void draw(GraphicsContext gc, DrawParams p) {
-        if (p.reset || p.canvasWidth != this.currentWidth) {
-            this.currentWidth = p.canvasWidth;
+        if (p.reset) {
             this.keyPointCache.reset(p.canvasHeight, p.canvasWidth);
 
             // reset all keys

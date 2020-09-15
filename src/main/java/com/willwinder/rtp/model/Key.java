@@ -108,7 +108,7 @@ public class Key {
     }
 
     public boolean isActive() {
-        return this.command == ShortMessage.NOTE_ON;
+        return this.command == ShortMessage.NOTE_ON && this.velocity != 0;
     }
 
     @Override
