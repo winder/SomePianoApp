@@ -5,20 +5,24 @@ import com.dlsc.formsfx.model.structure.Form;
 import com.dlsc.formsfx.model.structure.Section;
 import com.dlsc.formsfx.model.validators.IntegerRangeValidator;
 import com.dlsc.formsfx.view.renderer.FormRenderer;
+
 import com.willwinder.rtp.model.params.AllParams;
 import com.willwinder.rtp.model.params.BPMParams;
 import com.willwinder.rtp.model.params.KeyPointCacheParams;
 import com.willwinder.rtp.model.params.TimelineParams;
 import com.willwinder.rtp.util.BorderToolBar;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Dialog;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import static com.willwinder.rtp.Constants.DEFAULT_WIDTH;
 
+/**
+ * A window for configuring parameters.
+ */
 public class SettingsView extends Stage {
     private final AllParams params;
     private final Form form;

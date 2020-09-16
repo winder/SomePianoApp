@@ -5,6 +5,7 @@ import com.willwinder.rtp.graphics.KeyPointCache;
 import com.willwinder.rtp.model.KeyboardState;
 import com.willwinder.rtp.util.KeyboardReceiver;
 
+// TODO: Need to save the parameters somehow.
 public class AllParams {
     public final KeyPointCacheParams keyPointCacheParams;
     public final KeyPointCache keyPointCache;

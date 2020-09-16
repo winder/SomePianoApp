@@ -21,7 +21,7 @@ public class MainController {
 
     private SettingsView settings = null;
 
-    public MainController(AllParams params, Stage parent, MainModel model) {
+    public MainController(MainModel model, AllParams params, Stage parent) {
         this.parent = parent;
         this.model = model;
         this.params = params;
@@ -34,7 +34,6 @@ public class MainController {
         }
         settings.showAndWait();
     };
-
 
     public EventHandler<ActionEvent> openMidiFileActionHandler = event -> {
             FileChooser fileChooser = new FileChooser();

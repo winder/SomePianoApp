@@ -2,6 +2,13 @@ package com.willwinder.rtp.controller;
 
 import com.willwinder.rtp.graphics.KeyPointCache;
 import com.willwinder.rtp.graphics.Renderable;
+import com.willwinder.rtp.graphics.RenderableFps;
+import com.willwinder.rtp.graphics.RenderableGroup;
+import com.willwinder.rtp.graphics.renderables.BPMLines;
+import com.willwinder.rtp.graphics.renderables.KeyboardView;
+import com.willwinder.rtp.graphics.renderables.TimelineBackground;
+import com.willwinder.rtp.graphics.renderables.TimelineSparks;
+import com.willwinder.rtp.model.params.AllParams;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -26,9 +33,46 @@ public class AnimationController extends AnimationTimer {
     private double w, h = 0.0;
     private int currentKeyPointHash = 0;
 
-    public AnimationController(GraphicsContext gc, KeyPointCache keyPointCache) {
+    public AnimationController(GraphicsContext gc, AllParams params) {
         this.gc = gc;
-        this.keyPointCache = keyPointCache;
+        this.keyPointCache = params.keyPointCache;
+
+        KeyboardView keyboardView = new KeyboardView(params.keyboardState, params.keyPointCache);
+
+        TimelineBackground timelineBackground = new TimelineBackground(params.timelineParams);
+        TimelineSparks timelineSparks = new TimelineSparks(params.timelineParams, params.keyboardState);
+
+        BPMLines bpm = new BPMLines(params.bpmParams);
+
+        RenderableGroup timeline = new RenderableGroup(
+                timelineBackground,
+                bpm,
+                timelineSparks
+        );
+        RenderableFps timelineFps = new RenderableFps(timeline, 40);
+
+        //////////////////////////
+        // Register renderables //
+        //////////////////////////
+        addRenderable(keyboardView);
+        addRenderable(timelineBackground);
+        addRenderable(bpm);
+        addRenderable(timelineSparks);
+
+        ////////////////////////
+        // Limit Timeline FPS //
+        ////////////////////////
+        //ac.addRenderable(keyboardView);
+        //ac.addRenderable(timelineFps);
+
+        ///////////////
+        // Debugging //
+        ///////////////
+        //ac.addRenderable(new NumKeysView(receiver));
+
+        // Register listeners
+        params.eventBus.register(keyboardView);
+        params.eventBus.register(timelineSparks);
     }
 
     public void addRenderable(Renderable r) {
