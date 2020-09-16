@@ -19,12 +19,11 @@ import javafx.stage.Stage;
 
 import static com.willwinder.rtp.Constants.DEFAULT_WIDTH;
 
-public class SettingsView extends Dialog {
+public class SettingsView extends Stage {
     private final AllParams params;
     private final Form form;
 
     public SettingsView(AllParams allParams, Stage parent) {
-        Stage dialog = new Stage();
         VBox content = new VBox();
 
         this.params = allParams;
@@ -42,7 +41,7 @@ public class SettingsView extends Dialog {
         save.setOnAction(e -> form.persist());
         close.setOnAction(e -> {
             form.reset();
-            dialog.close();
+            close();
         });
 
         toolbar.addLeft(close);
@@ -55,10 +54,9 @@ public class SettingsView extends Dialog {
         content.getChildren().add(formView);
 
         Scene scene = new Scene(content, DEFAULT_WIDTH, 400);
-        dialog.setScene(scene);
-        dialog.initOwner(parent);
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.showAndWait();
+        setScene(scene);
+        initOwner(parent);
+        initModality(Modality.APPLICATION_MODAL);
     }
 
     private static Form makeForm(AllParams allParams) {
