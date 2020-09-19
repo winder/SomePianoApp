@@ -23,6 +23,7 @@ public class MainView extends StackPane {
     public GraphicsContext graphicsContext;
     public ObjectProperty<EventHandler<ActionEvent>> openMidiFileEvent;
     public ObjectProperty<EventHandler<ActionEvent>> playMidiFileEvent;
+    public ObjectProperty<EventHandler<ActionEvent>> pauseMidiFileEvent;
 
     private final SettingsView settingsView;
 
@@ -52,7 +53,13 @@ public class MainView extends StackPane {
         playMidiFile.disableProperty().bind(model.midiFileSequence.isNull());
         playMidiFileEvent = playMidiFile.onActionProperty();
 
+        FontIcon pauseFile = FontIcon.of(FontAwesome.PAUSE, 30, Color.WHITE);
+        Button pauseMidiFile = new GraphicButton(pauseFile, Color.DARKGRAY);
+        pauseMidiFile.disableProperty().bind(model.midiFileSequence.isNull());
+        pauseMidiFileEvent = pauseMidiFile.onActionProperty();
+
         toolBar.addRight(settings);
+        toolBar.addCenter(pauseMidiFile);
         toolBar.addCenter(playMidiFile);
         toolBar.addLeft(openMidiFile);
 

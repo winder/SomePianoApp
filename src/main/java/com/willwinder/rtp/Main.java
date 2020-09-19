@@ -2,7 +2,6 @@ package com.willwinder.rtp;
 
 import com.google.common.eventbus.EventBus;
 
-import com.willwinder.rtp.controller.AnimationController;
 import com.willwinder.rtp.controller.MainController;
 import com.willwinder.rtp.graphics.KeyPointCache;
 import com.willwinder.rtp.model.MainModel;
@@ -11,17 +10,14 @@ import com.willwinder.rtp.model.params.*;
 import com.willwinder.rtp.util.KeyboardReceiver;
 import com.willwinder.rtp.view.MainView;
 
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import java.io.File;
-import java.io.IOException;
 import java.time.Duration;
 
 import static com.willwinder.rtp.Constants.DEFAULT_HEIGHT;
@@ -46,18 +42,16 @@ public class Main extends Application {
 
         MainModel model = new MainModel();
         MainView mainPane = new MainView(model, allParams, stage);
-        MainController mainController = new MainController(model, allParams, stage);
+        MainController mainController = new MainController(mainPane.graphicsContext, allParams, model, stage);
 
         mainPane.openMidiFileEvent.set(mainController.openMidiFileActionHandler);
         mainPane.playMidiFileEvent.set(mainController.playMidiFileActionHandler);
+        mainPane.pauseMidiFileEvent.set(mainController.pauseMidiFileActionHandler);
 
         Scene scene = new Scene(mainPane, DEFAULT_WIDTH, DEFAULT_HEIGHT, Color.BLACK);
         stage.setTitle("RealTime Piano");
         stage.setScene(scene);
 
-        // start the animation timer.
-        AnimationTimer at = new AnimationController(mainPane.graphicsContext, allParams);
-        at.start();
 
         try {
             model.midiFileSequence.setValue(MidiSystem.getSequence(new File("/home/will/Downloads/Prelude_I_in_C_major_BWV_846_-_Well_Tempered_Clavier_First_Book.mid")));
