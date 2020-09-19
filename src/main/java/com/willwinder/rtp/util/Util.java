@@ -14,7 +14,7 @@ public class Util {
     public static final Key.Note[] NOTE_ENUMS = {C, C_SHARP, D, D_SHARP, E, F, F_SHARP, G, G_SHARP, A, A_SHARP, B};
 
     public static int dataToOctave(int key) {
-        return (key / 12) - 1;
+        return ((key+3) / 12) - 1;
     }
 
     public static Key.Note dataToNote(int key) {
@@ -55,15 +55,9 @@ public class Util {
     public static Optional<Key> midiMessageToKey(MidiMessage message) {
         if (message instanceof ShortMessage) {
             ShortMessage sm = (ShortMessage)message;
-            Key k = new Key(dataToNote(sm.getData1()), dataToOctave(sm.getData1()), sm.getCommand(), sm.getStatus(), sm.getData1(), sm.getData2());
+            Key k = new Key(dataToNote(sm.getData1()), dataToOctave(sm.getData1()), sm.getCommand(), sm.getStatus(), sm.getData1(), sm.getData2(), 0);
             return Optional.of(k);
         }
-        /*
-        if (message instanceof MetaMessage) {
-            MetaMessage mm = (MetaMessage)message;
-            mm.
-        }
-         */
 
         return Optional.empty();
     }
@@ -71,14 +65,22 @@ public class Util {
     public static String midiMessageToString(MidiMessage message) {
         return midiMessageToKey(message)
                 .map(Key::toString)
-                .orElseGet(() ->
-                        "Message (" +
+                .orElseGet(() -> {
+                    if (message instanceof MetaMessage) {
+                        MetaMessage mm = (MetaMessage) message;
+                        return "Message (" +
+                                mm.toString() +
+                                "): " + MetaUtils.metaTypeToString(mm);
+                    } else {
+                        return "Message (" +
                                 message.toString() +
                                 "), status: " +
                                 message.getStatus() +
                                 ", message: " +
                                 Arrays.toString(message.getMessage()) +
                                 ", length: " +
-                                message.getLength());
+                                message.getLength();
+                    }
+                });
     }
 }

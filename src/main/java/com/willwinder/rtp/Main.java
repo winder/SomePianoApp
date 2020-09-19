@@ -6,10 +6,8 @@ import com.willwinder.rtp.controller.AnimationController;
 import com.willwinder.rtp.controller.MainController;
 import com.willwinder.rtp.graphics.KeyPointCache;
 import com.willwinder.rtp.model.MainModel;
-import com.willwinder.rtp.model.params.AllParams;
-import com.willwinder.rtp.model.params.BPMParams;
-import com.willwinder.rtp.model.params.KeyPointCacheParams;
-import com.willwinder.rtp.model.params.TimelineParams;
+import com.willwinder.rtp.model.TimelineNotes;
+import com.willwinder.rtp.model.params.*;
 import com.willwinder.rtp.util.KeyboardReceiver;
 import com.willwinder.rtp.view.MainView;
 
@@ -19,8 +17,11 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 
 import static com.willwinder.rtp.Constants.DEFAULT_HEIGHT;
@@ -58,6 +59,12 @@ public class Main extends Application {
         AnimationTimer at = new AnimationController(mainPane.graphicsContext, allParams);
         at.start();
 
+        try {
+            model.midiFileSequence.setValue(MidiSystem.getSequence(new File("/home/will/Downloads/Prelude_I_in_C_major_BWV_846_-_Well_Tempered_Clavier_First_Book.mid")));
+        } catch (Exception e) {
+            System.out.println("This should have been removed.");
+        }
+
         // Display the GUI
         stage.show();
     }
@@ -86,7 +93,11 @@ public class Main extends Application {
 
         KeyPointCache keyPointCache = new KeyPointCache(keyPointCacheParams);
 
+        var notes = new TimelineNotes();
+        eventBus.register(notes);
+
         TimelineParams timelineParams = new TimelineParams(
+                notes,
                 false,
                 Duration.ofSeconds(3),
                 keyPointCache);
@@ -94,11 +105,17 @@ public class Main extends Application {
                 100,
                 timelineParams);
 
+        GrandStaffParams staffParams = new GrandStaffParams(
+                80.0,
+                0.3
+        );
+
         AllParams params = new AllParams(
                 keyPointCacheParams,
                 keyPointCache,
                 timelineParams,
                 bpmParams,
+                staffParams,
                 eventBus,
                 receiver,
                 receiver);

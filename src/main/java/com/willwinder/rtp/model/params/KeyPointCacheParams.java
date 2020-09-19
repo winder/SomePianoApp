@@ -48,7 +48,7 @@ public class KeyPointCacheParams {
         this.numKeys = new SimpleIntegerProperty(numKeys);
 
         // Reset the hash cache when something changes.
-        ChangeListener listener = (ChangeListener<Number>) (observable, oldValue, newValue) -> hashCache = 0;
+        ChangeListener<Number> listener = (observable, oldValue, newValue) -> hashCache = 0;
         this.leftMargin.addListener(listener);
         this.rightMargin.addListener(listener);
         this.blackKeyWidthRatio.addListener(listener);

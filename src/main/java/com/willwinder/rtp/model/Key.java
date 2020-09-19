@@ -11,14 +11,16 @@ public class Key {
     public final int status;
     public final int key;
     public final int velocity;
+    public final int hand;
 
-    public Key(Note note, int octave, int command, int status, int key, int velocity) {
+    public Key(Note note, int octave, int command, int status, int key, int velocity, int hand) {
         this.note = note;
         this.octave = octave;
         this.command = command;
         this.status = status;
         this.key = key;
         this.velocity = velocity;
+        this.hand = hand;
     }
 
     public enum Note {

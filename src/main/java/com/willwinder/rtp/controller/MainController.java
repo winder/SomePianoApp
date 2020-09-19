@@ -76,7 +76,12 @@ public class MainController {
             for (int i = 0; i < track.size(); i++) {
                 MidiEvent midiEvent = track.get(i);
                 var tick = midiEvent.getTick();
-                System.out.println(Util.midiMessageToString(midiEvent.getMessage()));
+
+                String msg = Util.midiMessageToString(midiEvent.getMessage());
+                if (msg.length() > 0) {
+                    System.out.println(msg);
+                }
+
                 var key = Util.midiMessageToKey(midiEvent.getMessage());
                 if (key.isPresent()) {
                     var delta = tick * kMsPerTick * 1000.0;

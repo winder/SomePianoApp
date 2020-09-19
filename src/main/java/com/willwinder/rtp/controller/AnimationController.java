@@ -4,10 +4,7 @@ import com.willwinder.rtp.graphics.KeyPointCache;
 import com.willwinder.rtp.graphics.Renderable;
 import com.willwinder.rtp.graphics.RenderableFps;
 import com.willwinder.rtp.graphics.RenderableGroup;
-import com.willwinder.rtp.graphics.renderables.BPMLines;
-import com.willwinder.rtp.graphics.renderables.KeyboardView;
-import com.willwinder.rtp.graphics.renderables.TimelineBackground;
-import com.willwinder.rtp.graphics.renderables.TimelineSparks;
+import com.willwinder.rtp.graphics.renderables.*;
 import com.willwinder.rtp.model.params.AllParams;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,8 +12,6 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.willwinder.rtp.Constants.DEFAULT_WIDTH;
 
 /**
  * This is the main loop, and is sort of an controller in the MVC sense of the word. The JavaFX runtime is
@@ -42,12 +37,15 @@ public class AnimationController extends AnimationTimer {
         TimelineBackground timelineBackground = new TimelineBackground(params.timelineParams);
         TimelineSparks timelineSparks = new TimelineSparks(params.timelineParams, params.keyboardState);
 
+        GrandStaff grandStaff = new GrandStaff(params.timelineParams, params.grandStaffParams);
+
         BPMLines bpm = new BPMLines(params.bpmParams);
 
         RenderableGroup timeline = new RenderableGroup(
                 timelineBackground,
                 bpm,
-                timelineSparks
+                timelineSparks,
+                grandStaff
         );
         RenderableFps timelineFps = new RenderableFps(timeline, 40);
 
@@ -58,6 +56,7 @@ public class AnimationController extends AnimationTimer {
         addRenderable(timelineBackground);
         addRenderable(bpm);
         addRenderable(timelineSparks);
+        addRenderable(grandStaff);
 
         ////////////////////////
         // Limit Timeline FPS //
@@ -72,7 +71,7 @@ public class AnimationController extends AnimationTimer {
 
         // Register listeners
         params.eventBus.register(keyboardView);
-        params.eventBus.register(timelineSparks);
+        //params.eventBus.register(timelineSparks);
     }
 
     public void addRenderable(Renderable r) {

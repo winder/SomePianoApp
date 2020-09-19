@@ -69,6 +69,10 @@ public class SettingsView extends Stage {
         TimelineParams timelineParams = allParams.timelineParams;
         return Form.of(
             Section.of(
+                Field.ofDoubleType(allParams.grandStaffParams.offsetPercentTest)
+                    .label("Testing the offset into the staff.")
+            ).title("test"),
+            Section.of(
                 Field.ofIntegerType(keyPointCacheParams.firstKey)
                     .label("First Key")
                     .labelDescription("First key of keyboard in MIDI key code. A0 = 21.")
