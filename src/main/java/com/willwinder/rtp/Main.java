@@ -8,6 +8,7 @@ import com.willwinder.rtp.model.MainModel;
 import com.willwinder.rtp.model.TimelineNotes;
 import com.willwinder.rtp.model.params.*;
 import com.willwinder.rtp.util.KeyboardReceiver;
+import com.willwinder.rtp.view.AnimateRenderables;
 import com.willwinder.rtp.view.MainView;
 
 import javafx.application.Application;
@@ -43,6 +44,7 @@ public class Main extends Application {
         MainModel model = new MainModel();
         MainView mainPane = new MainView(model, allParams, stage);
         MainController mainController = new MainController(mainPane.graphicsContext, allParams, model, stage);
+        AnimateRenderables animationTimer = new AnimateRenderables(mainController.updateTimelineTimeEvent, mainPane.graphicsContext, allParams);
 
         mainPane.openMidiFileEvent.set(mainController.openMidiFileActionHandler);
         mainPane.playMidiFileEvent.set(mainController.playMidiFileActionHandler);
@@ -53,11 +55,14 @@ public class Main extends Application {
         stage.setScene(scene);
 
 
+        // Load in a MIDI file automatically to streamline debugging.
         try {
             model.midiFileSequence.setValue(MidiSystem.getSequence(new File("/home/will/Downloads/Prelude_I_in_C_major_BWV_846_-_Well_Tempered_Clavier_First_Book.mid")));
         } catch (Exception e) {
             System.out.println("This should have been removed.");
         }
+
+        animationTimer.start();
 
         // Display the GUI
         stage.show();
@@ -66,7 +71,7 @@ public class Main extends Application {
     /**
      * There are all the knobs which can be tuned initialized in one place.
      *
-     * // TODO: This should involve saving/loading parameters somehow.
+     * // TODO: This should involve saving/loading parameters from a file somehow.
      */
     private AllParams initializeAllParams() {
         EventBus eventBus = new EventBus();

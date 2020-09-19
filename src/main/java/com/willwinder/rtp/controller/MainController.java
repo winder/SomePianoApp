@@ -1,48 +1,35 @@
 package com.willwinder.rtp.controller;
 
 import com.willwinder.rtp.graphics.KeyPointCache;
-import com.willwinder.rtp.graphics.Renderable;
-import com.willwinder.rtp.graphics.RenderableFps;
-import com.willwinder.rtp.graphics.RenderableGroup;
-import com.willwinder.rtp.graphics.renderables.*;
 import com.willwinder.rtp.model.MainModel;
 import com.willwinder.rtp.model.params.AllParams;
 import com.willwinder.rtp.util.NoteEvent;
 import com.willwinder.rtp.util.Util;
-import com.willwinder.rtp.view.SettingsView;
-import javafx.animation.AnimationTimer;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * This is the main loop, and is sort of an controller in the MVC sense of the word. The JavaFX runtime is
- * responsible for calling handle when the canvas should be repainted.
+ * This is the main loop and controller in the MVC sense of the word.
  *
- * Drawing is done using a simple Actor model. Any number of Renderable objects can be added for drawing.
  */
-public class MainController extends AnimationTimer {
+public class MainController {
     private final GraphicsContext gc;
     private KeyPointCache keyPointCache;
     private AllParams allParams;
     private MainModel model;
     private Stage parent;
-    private final List<Renderable> renderableList = new ArrayList<>();
 
-    // For detecting a reset is required.
-    private double w, h = 0.0;
-    private int currentKeyPointHash = 0;
-
-    // Playback metadata.
+    ////////////////////////
+    // Playback metadata. //
+    ////////////////////////
     private boolean playing = false;
     private boolean paused = false;
     private long lastUpdateMs = 0;
@@ -56,51 +43,10 @@ public class MainController extends AnimationTimer {
         this.parent = parent;
 
         model.midiFileSequence.addListener(s -> loadMidiFile());
-        KeyboardView keyboardView = new KeyboardView(params.keyboardState, params.keyPointCache);
-
-        TimelineBackground timelineBackground = new TimelineBackground(params.timelineParams);
-        TimelineSparks timelineSparks = new TimelineSparks(params.timelineParams, params.keyboardState);
-
-        GrandStaff grandStaff = new GrandStaff(params.timelineParams, params.grandStaffParams);
-
-        BPMLines bpm = new BPMLines(params.bpmParams);
-
-        RenderableGroup timeline = new RenderableGroup(
-                timelineBackground,
-                bpm,
-                timelineSparks,
-                grandStaff
-        );
-        RenderableFps timelineFps = new RenderableFps(timeline, 40);
-
-        //////////////////////////
-        // Register renderables //
-        //////////////////////////
-        addRenderable(keyboardView);
-        addRenderable(timelineBackground);
-        addRenderable(bpm);
-        addRenderable(timelineSparks);
-        addRenderable(grandStaff);
-
-        ////////////////////////
-        // Limit Timeline FPS //
-        ////////////////////////
-        //ac.addRenderable(keyboardView);
-        //ac.addRenderable(timelineFps);
-
-        ///////////////
-        // Debugging //
-        ///////////////
-        //ac.addRenderable(new NumKeysView(receiver));
-
-        // Register listeners
-        params.eventBus.register(keyboardView);
-        //params.eventBus.register(timelineSparks);
-
-        start();
     }
 
     // Set the playback time based on parameters
+    public EventHandler<ActionEvent> updateTimelineTimeEvent = event -> updateTime();
     private void updateTime() {
         long now = System.currentTimeMillis();
         // Realtime mode
@@ -120,45 +66,6 @@ public class MainController extends AnimationTimer {
                 this.lastUpdateMs = now;
             }
 
-        }
-    }
-
-    public void addRenderable(Renderable r) {
-        if (!renderableList.contains(r)) {
-            renderableList.add(r);
-        }
-    }
-
-    public void removeRenderable(Renderable r) {
-        renderableList.remove(r);
-    }
-
-    @Override
-    public void handle(long l) {
-        updateTime();
-
-        double height = gc.getCanvas().getHeight();
-        double width = gc.getCanvas().getWidth();
-
-        boolean reset = false;
-        int kpHash = this.keyPointCache.params.hashCode();
-        if (w != width || h != height || currentKeyPointHash != kpHash) {
-            gc.setFill(Color.BLACK);
-            gc.fillRect(0, 0, width, height);
-            this.w = width;
-            this.h = height;
-            this.currentKeyPointHash = kpHash;
-            reset = true;
-        }
-
-        Renderable.DrawParams drawParams = new Renderable.DrawParams(w, h, reset, this.allParams.timelineParams.nowMs.get());
-
-        for (Renderable r : renderableList) {
-            try {
-                r.draw(gc, drawParams);
-            } catch (Renderable.RenderableException e) {
-                e.printStackTrace();
-            }
         }
     }
 
