@@ -136,7 +136,7 @@ public class TimelineSparks implements Renderable {
             }
         }
 
-        boolean isKeyActive = state.getActiveKeyCodes().contains(note.key);
+        boolean isKeyActive = state.getActiveKeyCodes().contains(note.key.key);
         boolean notePressed = isNoteActive && isKeyActive;
 
         Color fillColor = switch(note.track) {

@@ -12,6 +12,8 @@ public class TimelineParams {
     public final KeyPointCache keyPointCache;
     public final BooleanProperty out;
     public final LongProperty nowMs;
+    public final DoubleProperty quarterNoteDurationMs;
+    public final DoubleProperty measureDurationMs;
 
     /**
      * Timeline parameters. The bottom margine is dynamic based on how large
@@ -27,6 +29,9 @@ public class TimelineParams {
         this.timelineDurationMs = new SimpleIntegerProperty((int)timelineDuration.toMillis());
         this.keyPointCache = keyPointCache;
         this.nowMs = new SimpleLongProperty(0);
+        this.quarterNoteDurationMs = new SimpleDoubleProperty(0);
+        this.measureDurationMs = new SimpleDoubleProperty();
+        this.measureDurationMs.bind(this.quarterNoteDurationMs.multiply(4.0));
     }
 
     public double getHeight(double canvasHeight) {

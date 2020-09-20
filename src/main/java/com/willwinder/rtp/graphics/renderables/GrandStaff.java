@@ -65,14 +65,32 @@ public class GrandStaff implements Renderable {
                 brace.getWidth(), imageYOffset,
                 bars.getWidth(), bars.getHeight());
 
-        ///////////
-        // Notes //
-        ///////////
+        // Variables for measure lines + notes
         long duration = this.timelineParams.timelineDurationMs.get();
         long timelineEndMs   = this.timelineParams.out.get() ? params.nowMs            : params.nowMs + duration;
         long timelineStartMs = this.timelineParams.out.get() ? params.nowMs - duration : params.nowMs;
-
         double notesLeftMargin = this.brace.getWidth() + 2 * this.cleffs.getWidth();
+
+        ///////////////////
+        // Measure lines //
+        ///////////////////
+        gc.setStroke(Color.BLACK);
+        gc.setLineWidth(4);
+
+        double measureDuration = this.timelineParams.measureDurationMs.get();
+        double lastMeasure = timelineEndMs / (long) measureDuration * measureDuration;
+        double y1 = this.getYOffsetForNote(5, Key.Note.F, Cleff.TREBLE) + this.grandStaffParams.topMargin.get();
+        double y2 = this.getYOffsetForNote(2, Key.Note.G, Cleff.BASS) + this.grandStaffParams.topMargin.get();
+        while (lastMeasure > timelineStartMs) {
+            double xOffsetFactor = (lastMeasure - timelineStartMs) / (double) duration;
+            double xOffset = notesLeftMargin + xOffsetFactor * (params.canvasWidth - notesLeftMargin);
+            gc.strokeLine(xOffset, y1, xOffset, y2);
+            lastMeasure -= measureDuration;
+        }
+
+        ///////////
+        // Notes //
+        ///////////
 
         // Process the sparks
         synchronized (timelineParams.timelineNotes) {
@@ -250,6 +268,8 @@ public class GrandStaff implements Renderable {
         };
     }
 
+    // TODO: Convert to 'drawMeasure' and accept a series of notes so that a bar can be drawn over notes when necessary.
+    //       Computing the measure when creating the Key object is probably going to be a good idea.
     private void drawNote(GraphicsContext gc, TimelineNotes.TimelineNote note, long timelineStartMs, long timelineEndMs, double barsLeftMargin, double barsWidth, double canvasHeight) {
         // Notes need to scroll left to right.
         // Lets start by drawing the note at the correct height by drawing it right in the middle.
@@ -274,15 +294,20 @@ public class GrandStaff implements Renderable {
         // Note: Using max here means the note head will crash into the edge and remain visible until the note ends.
         double startOffsetFactor = Math.max(1 - ((timelineStartMs - note.startTimeMs) / (double) duration), 0.0);
         double endOffsetFactor   = Math.max(1 - ((timelineStartMs - note.endTimeMs)   / (double) duration), 0.0);
+
+        // Tweak factors for realtime mode.
         if (this.timelineParams.out.get()) {
+            if (note.endTimeMs < 0) {
+                endOffsetFactor = 0;
+            } else {
+                endOffsetFactor   = 1 - endOffsetFactor;
+            }
             startOffsetFactor = 1 - startOffsetFactor;
-            endOffsetFactor   = 1 - startOffsetFactor;
         }
         xOffsetStart = barsLeftMargin + startOffsetFactor * barsWidth;
         xOffsetEnd   = barsLeftMargin + endOffsetFactor   * barsWidth;
 
-
-        // Draw the tail
+        // Draw the note tail
         if (xOffsetStart < (barsWidth + barsLeftMargin)) {
             gc.setFill(Color.RED);
             // Rectangle
@@ -290,11 +315,9 @@ public class GrandStaff implements Renderable {
             //        xOffsetEnd - xOffsetStart, 4);
             // Triangle
             var xpts = new double[]{xOffsetStart, xOffsetEnd, xOffsetStart};
-            var ypts = new double[]{yOffset - height/2.0, yOffset, yOffset + height/2.0};
+            var ypts = new double[]{yOffset - height/4.0, yOffset, yOffset + height/4.0};
             gc.fillPolygon(xpts,  ypts, 3);
         }
-
-        // Draw the note tail
 
         // Draw the note head.
         if (startOffsetFactor >= 0) {

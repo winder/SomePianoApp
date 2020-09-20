@@ -17,8 +17,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * This is the main loop and controller in the MVC sense of the word.
- *
+ * Controller.
  */
 public class MainController {
     private final GraphicsContext gc;
@@ -90,48 +89,50 @@ public class MainController {
     };
 
     private void loadMidiFile() {
-        if (this.model.midiFileSequence.isNotNull().get()) {
-            this.allParams.timelineParams.timelineNotes.cleanup();
+        if (this.model.midiFileSequence.isNull().get()) {
+            return;
+        }
 
-            long offset = this.allParams.timelineParams.timelineDurationMs.get();
+        this.allParams.timelineParams.timelineNotes.cleanup();
+        long duration = this.allParams.timelineParams.timelineDurationMs.get();
+        this.songOffsetMs = -duration;
+        this.allParams.timelineParams.nowMs.setValue(-duration);
 
-            var seq = this.model.midiFileSequence.get();
+        var seq = this.model.midiFileSequence.get();
 
-            double ppqn;
-            if (seq.getDivisionType() == 0.0) {
-                ppqn = seq.getResolution();
-            } else {
-                ppqn = seq.getDivisionType();
-            }
+        double ppqn;
+        if (seq.getDivisionType() == 0.0) {
+            ppqn = seq.getResolution();
+        } else {
+            ppqn = seq.getDivisionType();
+        }
 
-            double kMsPerQuarterNote = 60.0 / (double) this.allParams.bpmParams.bpm.get();
-            double kMsPerTick = kMsPerQuarterNote / ppqn;
+        double msPerQuarterNote = 60000.0 / (double) this.allParams.bpmParams.bpm.get();
+        double msPerTick = msPerQuarterNote / ppqn;
+        this.allParams.timelineParams.quarterNoteDurationMs.setValue(msPerQuarterNote);
 
-            int trackNum = 0;
-            for (Track track : seq.getTracks()) {
-                trackNum++;
-                for (int i = 0; i < track.size(); i++) {
-                    MidiEvent midiEvent = track.get(i);
-                    var tick = midiEvent.getTick();
+        int trackNum = 0;
+        for (Track track : seq.getTracks()) {
+            trackNum++;
+            for (int i = 0; i < track.size(); i++) {
+                MidiEvent midiEvent = track.get(i);
+                var tick = midiEvent.getTick();
 
-                    String msg = Util.midiMessageToString(midiEvent.getMessage());
-                    if (msg.length() > 0) {
-                        System.out.println(msg);
-                    }
+                String msg = Util.midiMessageToString(midiEvent.getMessage());
+                if (msg.length() > 0) {
+                    System.out.println(msg);
+                }
 
-                    var key = Util.midiMessageToKey(midiEvent.getMessage());
-                    if (key.isPresent()) {
-                        var delta = tick * kMsPerTick * 1000.0;
-                        this.allParams.eventBus.post(new NoteEvent(key.get(), trackNum, (long) (delta + offset)));
-                    }
+                var key = Util.midiMessageToKey(midiEvent.getMessage());
+                if (key.isPresent()) {
+                    var delta = tick * msPerTick;
+                    this.allParams.eventBus.post(new NoteEvent(key.get(), trackNum, (long) delta));
                 }
             }
         }
-    };
+    }
 
-    public EventHandler<ActionEvent> pauseMidiFileActionHandler = event -> {
-        this.paused = true;
-    };
+    public EventHandler<ActionEvent> pauseMidiFileActionHandler = event -> this.paused = true;
 
     public EventHandler<ActionEvent> playMidiFileActionHandler = event -> {
         // Check if this is a "resume" button, in which case resume and don't reset.
@@ -142,7 +143,7 @@ public class MainController {
 
         // Reset play information.
         this.lastUpdateMs = 0;
-        this.songOffsetMs = 0;
+        this.songOffsetMs = -this.allParams.timelineParams.timelineDurationMs.get();
         this.playing = true;
     };
 }
