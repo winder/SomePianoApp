@@ -72,20 +72,22 @@ public class GrandStaff implements Renderable {
         double notesLeftMargin = this.brace.getWidth() + 2 * this.cleffs.getWidth();
 
         ///////////////////
-        // Measure lines //
+        // Measure lines // disabled in realtime mode
         ///////////////////
-        gc.setStroke(Color.BLACK);
-        gc.setLineWidth(4);
+        if (!this.timelineParams.out.get()) {
+            gc.setStroke(Color.BLACK);
+            gc.setLineWidth(4);
 
-        double measureDuration = this.timelineParams.measureDurationMs.get();
-        double lastMeasure = timelineEndMs / (long) measureDuration * measureDuration;
-        double y1 = this.getYOffsetForNote(5, Key.Note.F, Cleff.TREBLE) + this.grandStaffParams.topMargin.get();
-        double y2 = this.getYOffsetForNote(2, Key.Note.G, Cleff.BASS) + this.grandStaffParams.topMargin.get();
-        while (lastMeasure > timelineStartMs) {
-            double xOffsetFactor = (lastMeasure - timelineStartMs) / (double) duration;
-            double xOffset = notesLeftMargin + xOffsetFactor * (params.canvasWidth - notesLeftMargin);
-            gc.strokeLine(xOffset, y1, xOffset, y2);
-            lastMeasure -= measureDuration;
+            double measureDuration = this.timelineParams.measureDurationMs.get();
+            double lastMeasure = timelineEndMs / (long) measureDuration * measureDuration;
+            double y1 = this.getYOffsetForNote(5, Key.Note.F, Cleff.TREBLE) + this.grandStaffParams.topMargin.get();
+            double y2 = this.getYOffsetForNote(2, Key.Note.G, Cleff.BASS) + this.grandStaffParams.topMargin.get();
+            while (lastMeasure > timelineStartMs) {
+                double xOffsetFactor = (lastMeasure - timelineStartMs) / (double) duration;
+                double xOffset = notesLeftMargin + xOffsetFactor * (params.canvasWidth - notesLeftMargin);
+                gc.strokeLine(xOffset, y1, xOffset, y2);
+                lastMeasure -= measureDuration;
+            }
         }
 
         ///////////
