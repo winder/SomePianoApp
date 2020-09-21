@@ -55,8 +55,10 @@ public class Util {
     public static Optional<Key> midiMessageToKey(MidiMessage message) {
         if (message instanceof ShortMessage) {
             ShortMessage sm = (ShortMessage)message;
-            Key k = new Key(dataToNote(sm.getData1()), dataToOctave(sm.getData1()), sm.getCommand(), sm.getStatus(), sm.getData1(), sm.getData2(), 0);
-            return Optional.of(k);
+            if (sm.getCommand() == ShortMessage.NOTE_ON || sm.getCommand() == ShortMessage.NOTE_ON) {
+                Key k = new Key(dataToNote(sm.getData1()), dataToOctave(sm.getData1()), sm.getCommand(), sm.getStatus(), sm.getData1(), sm.getData2(), 0);
+                return Optional.of(k);
+            }
         }
 
         return Optional.empty();
