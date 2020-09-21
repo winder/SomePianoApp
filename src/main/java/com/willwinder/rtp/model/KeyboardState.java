@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * Active key cache interface.
  */
-public interface NoteState {
+public interface KeyboardState {
     /**
      * Get a collection of active keys being pressed on a MIDI transmitter.
      * @return collection of Key objects.
