@@ -1,7 +1,22 @@
-# RealTimePiano
+# SomePianoApp
 
-Configured according to
-https://openjfx.io/openjfx-docs/#maven
+Some Piano App connects to a MIDI keyboard to help practice or show others what you're doing.
+
+## Realtime Mode
+
+In realtime mode notes you play are stretched along the timeline so that others can see what keys you're pressing and for how long.
+
+## Playback Mode
+
+Load up a MIDI file and play along as the notes fly across the screen.
+
+## Spark View
+
+The main spark view shows a vertical stripe for each note aligned with the corresponding key.
+
+## Sheet Music View
+
+The sheet music view attempts to draw notes on the grand staff.
 
 
 # Quickstart
@@ -13,7 +28,7 @@ Run
 ~$ ./gradlew run
 ```
 
-Runtime image
+Deploy
 ```
 ~$ ./gradlew jlink
 ~$ ./build/image/bin/rtp
@@ -21,32 +36,9 @@ Runtime image
 
 IntelliJ integration run/debug integration works with no configuration.
 
-## Maven (legacy)
+# Screenshots
 
-** Note: moving away from maven because it doesn't seem to handle modular projects as easily. **
-Download SDK and jmods:
-https://gluonhq.com/products/javafx/
+![Playback mode playing Bach's Prelude in C major](screenshots/playback_mode.png?raw=true "Playback mode playing Bach's Prelude in C major")
 
-Compile
-```
-~$ export PATH_TO_FX=/opt/java/javafx-sdk-14.0.2.1/lib
-~$ mvn compile
-```
+![Watch mode](screenshots/watch_mode.png?raw=true "Watch mode")
 
-Run
-```
-~$ mvn javafx:run
-```
-
-Debug
-(saved as a run configuration with IntelliJ)
-```
-~$ mvn javafx:run@debug
-```
-
-Runtime image
-```
-~$ export PATH_TO_FX_MODS=path/opt/java/javafx-jmods-14.0.2.1/
-~$ mvn javafx:jlink
-~$ ./target/rtp/bin/launcher
-```
