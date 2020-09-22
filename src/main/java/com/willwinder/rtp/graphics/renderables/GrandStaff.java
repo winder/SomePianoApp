@@ -95,13 +95,18 @@ public class GrandStaff implements Renderable {
         ///////////
 
         // Process the sparks
-        synchronized (timelineParams.timelineNotes) {
-            for (var sparkList : this.timelineParams.timelineNotes) {
-                ListIterator<TimelineNotes.TimelineNote> iter = sparkList.listIterator();
-                while (iter.hasNext()) {
-                    var note = iter.next();
+        synchronized (timelineParams.midiNotes) {
+            for (var note : this.timelineParams.midiNotes) {
+                if (note.startTimeMs < timelineEndMs && ((note.endTimeMs <0) || (note.endTimeMs > timelineStartMs))) {
+                    drawNote(gc, note, timelineEndMs, timelineStartMs, notesLeftMargin, params.canvasWidth - notesLeftMargin, params.canvasHeight);
+                }
+            }
+        }
 
-                    if (note.startTimeMs < timelineEndMs && ((note.endTimeMs <0) || (note.endTimeMs > timelineStartMs))) {
+        synchronized (timelineParams.playerNotes) {
+            for (var noteList : this.timelineParams.playerNotes) {
+                for (var note : noteList) {
+                    if (note.startTimeMs < timelineEndMs && ((note.endTimeMs < 0) || (note.endTimeMs > timelineStartMs))) {
                         drawNote(gc, note, timelineEndMs, timelineStartMs, notesLeftMargin, params.canvasWidth - notesLeftMargin, params.canvasHeight);
                     }
                 }

@@ -44,12 +44,29 @@ public class TimelineSparks implements Renderable {
         }
 
         // Process the sparks
-        synchronized (params.timelineNotes) {
-            for (var noteList : this.params.timelineNotes) {
-                var iter = noteList.listIterator();
-                while (iter.hasNext()) {
-                    var note = iter.next();
+        synchronized (params.midiNotes) {
+            for (var note : this.params.midiNotes) {
+                long ageCutoff = this.params.out.get() ? topMs : p.nowMs;
 
+                // TODO: Who is responsiblge for clearing out old stuff now?
+                //       There is an EndOfTrack event, perhaps that could help somehow.
+                // If it's too old, remove it.
+                if (note.endTimeMs > 0 && note.endTimeMs < ageCutoff) {
+                    //iter.remove();
+                    continue;
+                }
+
+                // Draw it if the start time is before the cutoff.
+                if (note.endTimeMs < 0 || note.endTimeMs > ageCutoff) {
+                    drawSpark(gc, note, topMs, p.canvasWidth, p.canvasHeight, p.nowMs);
+                }
+            }
+        }
+
+        // Process the sparks
+        synchronized (params.playerNotes) {
+            for (var noteList : this.params.playerNotes) {
+                for (var note : noteList) {
                     long ageCutoff = this.params.out.get() ? topMs : p.nowMs;
 
                     // TODO: Who is responsiblge for clearing out old stuff now?

@@ -10,6 +10,8 @@ public class TimelineNotes implements Iterable<List<TimelineNotes.TimelineNote>>
     // Consumers just know that it is a collection of lists of timeline notes.
     private final HashMap<Integer, List<TimelineNotes.TimelineNote>> notes;
 
+    private final List<TimelineNotes.TimelineNote> activeNotes;
+
     @Override
     public Iterator<List<TimelineNote>> iterator() {
         return notes.values().iterator();
@@ -23,7 +25,7 @@ public class TimelineNotes implements Iterable<List<TimelineNotes.TimelineNote>>
         public final int track;
         public final Key key;
 
-        private TimelineNote(long startTime, long endTime, boolean sustain, int track, Key key) {
+        public TimelineNote(long startTime, long endTime, boolean sustain, int track, Key key) {
             this.startTimeMs = startTime;
             this.endTimeMs = endTime;
             this.sustain = sustain;
@@ -34,6 +36,20 @@ public class TimelineNotes implements Iterable<List<TimelineNotes.TimelineNote>>
 
     public TimelineNotes() {
         notes = new HashMap<>();
+        activeNotes = new ArrayList<>();
+    }
+
+    public ArrayList<TimelineNote> getSortedNotesArray() {
+        var arr = new ArrayList<TimelineNote>();
+        for (var noteList : this) {
+            arr.addAll(noteList);
+        }
+        arr.sort(Comparator.comparingLong(o -> o.startTimeMs));
+        return arr;
+    }
+
+    public List<TimelineNote> getActiveNotes() {
+        return activeNotes;
     }
 
     /**
@@ -47,6 +63,7 @@ public class TimelineNotes implements Iterable<List<TimelineNotes.TimelineNote>>
             TimelineNote note = new TimelineNote(event.timestampMs, -1, false, event.track, event.key);
             notes.computeIfAbsent(event.key.key, k -> new ArrayList<>())
                     .add(note);
+            this.activeNotes.add(note);
         }
         // Set end time on release.
         else {
@@ -59,6 +76,13 @@ public class TimelineNotes implements Iterable<List<TimelineNotes.TimelineNote>>
                 v.get(v.size() - 1).endTimeMs = event.timestampMs;
                 return v;
             });
+            Iterator<TimelineNote> iter = this.activeNotes.iterator();
+            while (iter.hasNext()) {
+                var activeNote = iter.next();
+                if (activeNote.key.key == event.key.key) {
+                    iter.remove();
+                }
+            }
         }
     }
 

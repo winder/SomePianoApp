@@ -92,11 +92,12 @@ public class Main extends Application {
 
         KeyPointCache keyPointCache = new KeyPointCache(keyPointCacheParams);
 
-        var notes = new TimelineNotes();
-        eventBus.register(notes);
+        var midiNotes = new TimelineNotes();
+        var playerNotes = new TimelineNotes();
+        eventBus.register(playerNotes);
 
         TimelineParams timelineParams = new TimelineParams(
-                notes,
+                playerNotes,
                 false,
                 Duration.ofSeconds(3),
                 keyPointCache);
@@ -109,6 +110,11 @@ public class Main extends Application {
                 0.3
         );
 
+        ControllerParams controllerParams = new ControllerParams(
+                ControllerParams.Mode.FOLLOW,
+                ControllerParams.Hands.BOTH
+        );
+
         AllParams params = new AllParams(
                 keyPointCacheParams,
                 keyPointCache,
@@ -117,7 +123,8 @@ public class Main extends Application {
                 staffParams,
                 eventBus,
                 receiver,
-                receiver);
+                receiver,
+                controllerParams);
 
         return params;
     }

@@ -15,6 +15,7 @@ public class AllParams {
     public final EventBus eventBus;
     public final KeyboardState keyboardState;
     public final KeyboardReceiver keyboardReceiver;
+    public final ControllerParams controllerParams;
 
     public AllParams(KeyPointCacheParams keyPointCacheParams,
                      KeyPointCache keyPointCache,
@@ -23,7 +24,8 @@ public class AllParams {
                      GrandStaffParams grandStaffParams,
                      EventBus eventBus,
                      KeyboardState keyboardState,
-                     KeyboardReceiver keyboardReceiver) {
+                     KeyboardReceiver keyboardReceiver,
+                     ControllerParams controllerParams) {
         this.keyPointCacheParams = keyPointCacheParams;
         this.keyPointCache = keyPointCache;
         this.timelineParams = timelineParams;
@@ -32,5 +34,6 @@ public class AllParams {
         this.eventBus = eventBus;
         this.keyboardState = keyboardState;
         this.keyboardReceiver = keyboardReceiver;
+        this.controllerParams = controllerParams;
     }
 }

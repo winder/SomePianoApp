@@ -2,6 +2,7 @@ package com.willwinder.rtp.controller;
 
 import com.willwinder.rtp.graphics.KeyPointCache;
 import com.willwinder.rtp.model.MainModel;
+import com.willwinder.rtp.model.TimelineNotes;
 import com.willwinder.rtp.model.params.AllParams;
 import com.willwinder.rtp.util.NoteEvent;
 import com.willwinder.rtp.util.Util;
@@ -15,6 +16,9 @@ import javafx.stage.Stage;
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Controller.
@@ -29,6 +33,8 @@ public class MainController {
     ////////////////////////
     // Playback metadata. //
     ////////////////////////
+    private ArrayList<TimelineNotes.TimelineNote> midiNotes;
+    private int noteIdx = 0;
     private boolean playing = false;
     private boolean paused = false;
     private long lastUpdateMs = 0;
@@ -48,23 +54,68 @@ public class MainController {
     public EventHandler<ActionEvent> updateTimelineTimeEvent = event -> updateTime();
     private void updateTime() {
         long now = System.currentTimeMillis();
-        // Realtime mode
+
+        // Realtime mode - simple. Exit early when complete
         if (this.allParams.timelineParams.out.get()) {
             this.allParams.timelineParams.nowMs.setValue(now);
+            return;
         }
-        // Playback mode (i.e. check if we are "paused")
-        else {
-            if (!playing || paused) {
-                this.lastUpdateMs = 0;
-            } else {
-                if (this.lastUpdateMs != 0) {
-                    long delta = now - this.lastUpdateMs;
-                    songOffsetMs += delta;
-                    this.allParams.timelineParams.nowMs.setValue(songOffsetMs);
-                }
-                this.lastUpdateMs = now;
-            }
 
+        // Playback mode
+        long start = songOffsetMs;
+        long end = songOffsetMs + this.allParams.timelineParams.timelineDurationMs.get();
+
+        Set<Integer> requiredNotes = new HashSet<>();
+        for (var note : this.allParams.timelineParams.midiNotes) {
+            if (note.startTimeMs < start && note.endTimeMs > start) {
+                requiredNotes.add(note.key.key);
+            }
+        }
+
+        var activeNotes = allParams.timelineParams.playerNotes.getActiveNotes();
+        boolean missing = false;
+        if (requiredNotes.size() > 0) {
+            int foundNum = 0;
+            for (var active : activeNotes) {
+                // Check if the note was required, and that it was activated within 500ms
+                boolean found = requiredNotes.contains(active.key.key) && (active.startTimeMs > start - 500);
+
+                if (!found) {
+                    missing = true;
+                    System.out.println("Missing: " + active.key.key);
+                    break;
+                } else {
+                    foundNum++;
+                }
+            }
+            missing = missing || foundNum != requiredNotes.size();
+        }
+
+
+        if (!playing || paused || missing) {
+            this.lastUpdateMs = 0;
+        } else {
+            if (this.lastUpdateMs != 0) {
+                long delta = now - this.lastUpdateMs;
+                songOffsetMs += delta;
+                this.allParams.timelineParams.nowMs.setValue(songOffsetMs);
+            }
+            this.lastUpdateMs = now;
+        }
+
+        // Update timeline midi notes
+        // Remove ones that are no longer visible.
+        var iter = this.allParams.timelineParams.midiNotes.iterator();
+        while (iter.hasNext()) {
+            var note = iter.next();
+            if (note.endTimeMs < start) iter.remove();
+        }
+
+        // Add new notes coming onto the timeline.
+        while (noteIdx < this.midiNotes.size() && this.midiNotes.get(noteIdx).startTimeMs < end) {
+            this.allParams.timelineParams.midiNotes.add(
+                    this.midiNotes.get(noteIdx));
+            this.noteIdx++;
         }
     }
 
@@ -93,9 +144,9 @@ public class MainController {
             return;
         }
 
-        this.allParams.timelineParams.timelineNotes.cleanup();
         long duration = this.allParams.timelineParams.timelineDurationMs.get();
         this.songOffsetMs = -duration;
+        this.noteIdx = 0;
         this.allParams.timelineParams.nowMs.setValue(-duration);
 
         var seq = this.model.midiFileSequence.get();
@@ -112,6 +163,8 @@ public class MainController {
         this.allParams.timelineParams.quarterNoteDurationMs.setValue(msPerQuarterNote);
 
         int trackNum = 0;
+        TimelineNotes midiNotes = new TimelineNotes();
+
         for (Track track : seq.getTracks()) {
             trackNum++;
             for (int i = 0; i < track.size(); i++) {
@@ -126,10 +179,12 @@ public class MainController {
                 var key = Util.midiMessageToKey(midiEvent.getMessage());
                 if (key.isPresent()) {
                     var delta = tick * msPerTick;
-                    this.allParams.eventBus.post(new NoteEvent(key.get(), trackNum, (long) delta));
+                    midiNotes.noteEvent(new NoteEvent(key.get(), trackNum, (long) delta));
                 }
             }
         }
+
+        this.midiNotes = midiNotes.getSortedNotesArray();
     }
 
     public EventHandler<ActionEvent> pauseMidiFileActionHandler = event -> this.paused = true;

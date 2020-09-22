@@ -6,17 +6,18 @@ import com.dlsc.formsfx.model.structure.Section;
 import com.dlsc.formsfx.model.validators.IntegerRangeValidator;
 import com.dlsc.formsfx.view.renderer.FormRenderer;
 
-import com.willwinder.rtp.model.params.AllParams;
-import com.willwinder.rtp.model.params.BPMParams;
-import com.willwinder.rtp.model.params.KeyPointCacheParams;
-import com.willwinder.rtp.model.params.TimelineParams;
+import com.willwinder.rtp.model.params.*;
 import com.willwinder.rtp.util.BorderToolBar;
 
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.util.Arrays;
 
 import static com.willwinder.rtp.Constants.DEFAULT_WIDTH;
 
@@ -69,9 +70,9 @@ public class SettingsView extends Stage {
         TimelineParams timelineParams = allParams.timelineParams;
         return Form.of(
             Section.of(
-                Field.ofDoubleType(allParams.grandStaffParams.offsetPercentTest)
-                    .label("Testing the offset into the staff.")
-            ).title("test"),
+                    Field.ofSingleSelectionType(ControllerParams.modeOptionsListProperty, allParams.controllerParams.mode)
+                    .label("Play mode.")
+            ).title("Settings"),
             Section.of(
                 Field.ofIntegerType(keyPointCacheParams.firstKey)
                     .label("First Key")
