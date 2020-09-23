@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Controller.
@@ -66,33 +67,47 @@ public class MainController {
         long end = songOffsetMs + this.allParams.timelineParams.timelineDurationMs.get();
 
         Set<Integer> requiredNotes = new HashSet<>();
+        Set<Integer> optionalNotes = new HashSet<>();
+        //String r = "";
+        //String o = "";
         for (var note : this.allParams.timelineParams.midiNotes) {
-            if (note.startTimeMs < start && note.endTimeMs > start) {
-                requiredNotes.add(note.key.key);
+            var len = note.endTimeMs - note.startTimeMs;
+            if (note.startTimeMs <= start && note.endTimeMs > start) {
+                // Make the note optional after the first half has been played
+                if (note.startTimeMs + (len/2.0) > start) {
+                    //r += " " + note.key.note + note.key.octave;
+                    requiredNotes.add(note.key.key);
+                } else {
+                    //o += " " + note.key.note + note.key.octave;
+                    optionalNotes.add(note.key.key);
+                }
             }
         }
+        //System.out.println("required: " + r + ", optional: " + o);
 
         var activeNotes = allParams.timelineParams.playerNotes.getActiveNotes();
-        boolean missing = false;
+        boolean missingOrExtra = false;
         if (requiredNotes.size() > 0) {
             int foundNum = 0;
             for (var active : activeNotes) {
                 // Check if the note was required, and that it was activated within 500ms
-                boolean found = requiredNotes.contains(active.key.key) && (active.startTimeMs > start - 500);
+                boolean foundRequired = requiredNotes.contains(active.key.key);
+                boolean foundOptional = optionalNotes.contains(active.key.key);
 
-                if (!found) {
-                    missing = true;
-                    System.out.println("Missing: " + active.key.key);
-                    break;
-                } else {
+                if (foundRequired) {
                     foundNum++;
+                } else if (foundOptional) {
+                    // cool
+                } else {
+                    missingOrExtra = true;
+                    System.out.println("Extra: " + active.key.note + active.key.octave);
+                    break;
                 }
             }
-            missing = missing || foundNum != requiredNotes.size();
+            missingOrExtra = missingOrExtra || foundNum < requiredNotes.size();
         }
 
-
-        if (!playing || paused || missing) {
+        if (!playing || paused || missingOrExtra) {
             this.lastUpdateMs = 0;
         } else {
             if (this.lastUpdateMs != 0) {
