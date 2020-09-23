@@ -107,7 +107,8 @@ public class Main extends Application {
 
         GrandStaffParams staffParams = new GrandStaffParams(
                 80.0,
-                0.3
+                0.3,
+                false
         );
 
         ControllerParams controllerParams = new ControllerParams(

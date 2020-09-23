@@ -10,7 +10,6 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
 import java.io.InputStream;
-import java.util.ListIterator;
 
 public class GrandStaff implements Renderable {
 
@@ -30,10 +29,18 @@ public class GrandStaff implements Renderable {
     @Override
     public void draw(GraphicsContext gc, DrawParams params) throws RenderableException {
         double x = 0;
-        double y = this.grandStaffParams.topMargin.get();
-        this.staffHeight = this.grandStaffParams.heightPct.get() * params.canvasHeight - this.grandStaffParams.topMargin.get();
+        double y = 0;
+        this.staffHeight = this.grandStaffParams.heightPct.get() * params.canvasHeight - this.grandStaffParams.margin.get();
+        if (this.grandStaffParams.top.get()) {
+            y = this.grandStaffParams.margin.get();
+        } else {
+            y = params.canvasHeight
+                    - this.timelineParams.keyPointCache.getWhiteKeyHeight()
+                    - this.grandStaffParams.margin.get()
+                    - this.staffHeight;
+        }
         double imageHeight = 0.75 * staffHeight;
-        double imageYOffset = this.grandStaffParams.topMargin.get() + ((staffHeight - imageHeight) / 2.5);
+        double imageYOffset = y + ((staffHeight - imageHeight) / 2.5);
 
         // Scale the images when needed.
         if (params.reset || this.brace == null || this.cleffs == null || this.bars == null) {
@@ -80,8 +87,8 @@ public class GrandStaff implements Renderable {
 
             double measureDuration = this.timelineParams.measureDurationMs.get();
             double lastMeasure = timelineEndMs / (long) measureDuration * measureDuration;
-            double y1 = this.getYOffsetForNote(5, Key.Note.F, Cleff.TREBLE) + this.grandStaffParams.topMargin.get();
-            double y2 = this.getYOffsetForNote(2, Key.Note.G, Cleff.BASS) + this.grandStaffParams.topMargin.get();
+            double y1 = this.getYOffsetForNote(5, Key.Note.F, Cleff.TREBLE) + y;
+            double y2 = this.getYOffsetForNote(2, Key.Note.G, Cleff.BASS) + y;
             while (lastMeasure > timelineStartMs) {
                 double xOffsetFactor = (lastMeasure - timelineStartMs) / (double) duration;
                 double xOffset = notesLeftMargin + xOffsetFactor * (params.canvasWidth - notesLeftMargin);
@@ -98,7 +105,7 @@ public class GrandStaff implements Renderable {
         synchronized (timelineParams.midiNotes) {
             for (var note : this.timelineParams.midiNotes) {
                 if (note.startTimeMs < timelineEndMs && ((note.endTimeMs <0) || (note.endTimeMs > timelineStartMs))) {
-                    drawNote(gc, note, timelineEndMs, timelineStartMs, notesLeftMargin, params.canvasWidth - notesLeftMargin, params.canvasHeight);
+                    drawNote(gc, note, timelineEndMs, timelineStartMs, notesLeftMargin, params.canvasWidth - notesLeftMargin, y);
                 }
             }
         }
@@ -107,7 +114,7 @@ public class GrandStaff implements Renderable {
             for (var noteList : this.timelineParams.playerNotes) {
                 for (var note : noteList) {
                     if (note.startTimeMs < timelineEndMs && ((note.endTimeMs < 0) || (note.endTimeMs > timelineStartMs))) {
-                        drawNote(gc, note, timelineEndMs, timelineStartMs, notesLeftMargin, params.canvasWidth - notesLeftMargin, params.canvasHeight);
+                        drawNote(gc, note, timelineEndMs, timelineStartMs, notesLeftMargin, params.canvasWidth - notesLeftMargin, y);
                     }
                 }
             }
@@ -277,7 +284,7 @@ public class GrandStaff implements Renderable {
 
     // TODO: Convert to 'drawMeasure' and accept a series of notes so that a bar can be drawn over notes when necessary.
     //       Computing the measure when creating the Key object is probably going to be a good idea.
-    private void drawNote(GraphicsContext gc, TimelineNotes.TimelineNote note, long timelineStartMs, long timelineEndMs, double barsLeftMargin, double barsWidth, double canvasHeight) {
+    private void drawNote(GraphicsContext gc, TimelineNotes.TimelineNote note, long timelineStartMs, long timelineEndMs, double barsLeftMargin, double barsWidth, double areaYOffset) {
         // Notes need to scroll left to right.
         // Lets start by drawing the note at the correct height by drawing it right in the middle.
         Cleff c = getCleff(note.key);
@@ -289,7 +296,7 @@ public class GrandStaff implements Renderable {
             c = Cleff.BASS;
         }
 
-        double yOffset = this.getYOffsetForNote(note.key.octave, note.key.note, c) + this.grandStaffParams.topMargin.get();
+        double yOffset = this.getYOffsetForNote(note.key.octave, note.key.note, c) + areaYOffset;
         double xOffsetStart, xOffsetEnd;
         double height = 15;
         double width = 20;
