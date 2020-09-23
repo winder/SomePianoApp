@@ -92,14 +92,13 @@ public class Main extends Application {
 
         KeyPointCache keyPointCache = new KeyPointCache(keyPointCacheParams);
 
-        var midiNotes = new TimelineNotes();
         var playerNotes = new TimelineNotes();
         eventBus.register(playerNotes);
 
         TimelineParams timelineParams = new TimelineParams(
                 playerNotes,
                 false,
-                Duration.ofSeconds(3),
+                Duration.ofSeconds(7),
                 keyPointCache);
         BPMParams bpmParams = new BPMParams(
                 100,
@@ -108,6 +107,8 @@ public class Main extends Application {
         GrandStaffParams staffParams = new GrandStaffParams(
                 80.0,
                 0.3,
+                false,
+                4,
                 false
         );
 

@@ -1,11 +1,10 @@
 package com.willwinder.rtp.model.params;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.*;
 
 public class GrandStaffParams {
+    public final IntegerProperty rows;
+    public final BooleanProperty descending;
     public final DoubleProperty margin;
     public final BooleanProperty top;
     public final DoubleProperty heightPct;
@@ -13,7 +12,9 @@ public class GrandStaffParams {
 
     public final DoubleProperty offsetPercentTest;
 
-    public GrandStaffParams(double margin, double heightPct, boolean top) {
+    public GrandStaffParams(double margin, double heightPct, boolean top, int rows, boolean descending) {
+        this.rows = new SimpleIntegerProperty(rows);
+        this.descending = new SimpleBooleanProperty(descending);
         this.margin = new SimpleDoubleProperty(margin);
         this.top = new SimpleBooleanProperty(top);
         this.heightPct = new SimpleDoubleProperty(heightPct);
