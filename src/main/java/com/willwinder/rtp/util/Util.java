@@ -23,33 +23,33 @@ public class Util {
     }
 
     public static String commandToString(int command) {
-        return switch(command) {
-            case ShortMessage.CHANNEL_PRESSURE -> "CHANNEL_PRESSURE";
-            case ShortMessage.CONTROL_CHANGE   -> "CONTROL_CHANGE";
-            case ShortMessage.NOTE_OFF         -> "NOTE_OFF";
-            case ShortMessage.NOTE_ON          -> "NOTE_ON";
-            case ShortMessage.PITCH_BEND       -> "PITCH_BEND";
-            case ShortMessage.POLY_PRESSURE    -> "POLY_PRESSURE";
-            case ShortMessage.PROGRAM_CHANGE   -> "PROGRAM_CHANGE";
-            default                            -> "UNKNOWN (" + command + ")";
-        };
+        switch(command) {
+            case ShortMessage.CHANNEL_PRESSURE: return "CHANNEL_PRESSURE";
+            case ShortMessage.CONTROL_CHANGE  : return "CONTROL_CHANGE";
+            case ShortMessage.NOTE_OFF        : return "NOTE_OFF";
+            case ShortMessage.NOTE_ON         : return "NOTE_ON";
+            case ShortMessage.PITCH_BEND      : return "PITCH_BEND";
+            case ShortMessage.POLY_PRESSURE   : return "POLY_PRESSURE";
+            case ShortMessage.PROGRAM_CHANGE  : return "PROGRAM_CHANGE";
+            default                           : return "UNKNOWN (" + command + ")";
+        }
     }
 
     public static String statusToString(int status) {
-        return switch (status) {
-            case ShortMessage.ACTIVE_SENSING        -> "ACTIVE_SENSING";
-            case ShortMessage.CONTINUE              -> "CONTINUE";
-            case ShortMessage.END_OF_EXCLUSIVE      -> "END_OF_EXCLUSIVE";
-            case ShortMessage.MIDI_TIME_CODE        -> "MIDI_TIME_CODE";
-            case ShortMessage.SONG_POSITION_POINTER -> "SONG_POSITION_POINTER";
-            case ShortMessage.SONG_SELECT           -> "SONG_SELECT";
-            case ShortMessage.START                 -> "START";
-            case ShortMessage.STOP                  -> "STOP";
-            case ShortMessage.SYSTEM_RESET          -> "SYSTEM_RESET";
-            case ShortMessage.TIMING_CLOCK          -> "TIMING_CLOCK";
-            case ShortMessage.TUNE_REQUEST          -> "TUNE_REQUEST";
-            default                                 -> "UNKNOWN (" + status + ")";
-        };
+        switch (status) {
+            case ShortMessage.ACTIVE_SENSING       : return "ACTIVE_SENSING";
+            case ShortMessage.CONTINUE             : return "CONTINUE";
+            case ShortMessage.END_OF_EXCLUSIVE     : return "END_OF_EXCLUSIVE";
+            case ShortMessage.MIDI_TIME_CODE       : return "MIDI_TIME_CODE";
+            case ShortMessage.SONG_POSITION_POINTER: return "SONG_POSITION_POINTER";
+            case ShortMessage.SONG_SELECT          : return "SONG_SELECT";
+            case ShortMessage.START                : return "START";
+            case ShortMessage.STOP                 : return "STOP";
+            case ShortMessage.SYSTEM_RESET         : return "SYSTEM_RESET";
+            case ShortMessage.TIMING_CLOCK         : return "TIMING_CLOCK";
+            case ShortMessage.TUNE_REQUEST         : return "TUNE_REQUEST";
+            default                                : return "UNKNOWN (" + status + ")";
+        }
     }
 
     public static Optional<Key> midiMessageToKey(MidiMessage message) {

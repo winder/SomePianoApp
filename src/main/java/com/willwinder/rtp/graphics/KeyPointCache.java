@@ -165,8 +165,10 @@ public class KeyPointCache {
         var whiteDiv2 = whiteKeyWidth / 2.0;
         var blackDiv2 = blackKeyWidth / 2.0;
 
-        return switch(note) {
-            case C, F -> new KeyPoints(
+        switch(note) {
+            case C:
+            case F:
+                return new KeyPoints(
                     new double[]{
                             center - whiteDiv2 + padding,
                             center + whiteDiv2 - blackDiv2 - padding,
@@ -185,7 +187,9 @@ public class KeyPointCache {
                             y + whiteKeyHeight
                     },
                     6);
-            case E, B -> new KeyPoints(
+            case E:
+            case B:
+                return new KeyPoints(
                     new double[]{
                             center - whiteDiv2 + blackDiv2 + padding,
                             center + whiteDiv2 - padding,
@@ -203,7 +207,10 @@ public class KeyPointCache {
                             y + blackKeyHeight + padding,
                     },
                     6);
-            case D, G, A ->new KeyPoints(
+            case D:
+            case G:
+            case A:
+                return new KeyPoints(
                     new double[]{
                             center - whiteDiv2 + blackDiv2 + padding,
                             center + whiteDiv2 - blackDiv2 - padding,
@@ -225,7 +232,12 @@ public class KeyPointCache {
                             y + blackKeyHeight + padding
                     },
                     8);
-            case C_SHARP, D_SHARP, F_SHARP, G_SHARP, A_SHARP -> new KeyPoints(
+            case C_SHARP:
+            case D_SHARP:
+            case F_SHARP:
+            case G_SHARP:
+            case A_SHARP:
+                return new KeyPoints(
                     new double[]{
                             center - blackDiv2 + padding,
                             center + blackDiv2 - padding,
@@ -239,6 +251,8 @@ public class KeyPointCache {
                             y + blackKeyHeight - padding,
                     },
                     4);
-        };
+            default:
+                throw new IllegalStateException("Unexpected value: " + note);
+        }
     }
 }

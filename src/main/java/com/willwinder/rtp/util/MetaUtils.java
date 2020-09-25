@@ -216,24 +216,30 @@ public class MetaUtils {
             return message.getType() + ": Unknown meta type!";
         }
 
-        return type.toString() + ": " + switch(type) {
-            case META_TEMPO -> String.valueOf(parseTempMetaMessage(message));
-            case META_TIME_SIG -> String.valueOf(new TimeSignatureData(message.getData()));
-            case META_KEY_SIG -> String.valueOf(new KeySignatureData(message.getData()));
-            case    META_TRACK_NAME,
-                    META_INSTRUMENT_NAME,
-                    META_LYRICS,
-                    META_CHANNEL_PREFIX,
-                    META_MIDI_PORT,
-                    META_END_OF_TRACK,
-                    META_CUE_POINT,
-                    META_DEVICE_NAME,
-                    META_MARKER,
-                    META_PROGRAM_NAME,
-                    META_SMPTE_OFFSET,
-                    META_TEXT,
-                    META_COPYRIGHT -> bytesToText(message.getData());
-            case UNKNOWN -> message.getType() + " - Unknown meta type! (" + bytesToText(message.getData()) + ")";
-        };
+        switch(type) {
+            case META_TEMPO:
+                return type.toString() + ": " + parseTempMetaMessage(message);
+            case META_TIME_SIG:
+                return type.toString() + ": " + new TimeSignatureData(message.getData());
+            case META_KEY_SIG:
+                return type.toString() + ": " + new KeySignatureData(message.getData());
+            case META_TRACK_NAME:
+            case META_INSTRUMENT_NAME:
+            case META_LYRICS:
+            case META_CHANNEL_PREFIX:
+            case META_MIDI_PORT:
+            case META_END_OF_TRACK:
+            case META_CUE_POINT:
+            case META_DEVICE_NAME:
+            case META_MARKER:
+            case META_PROGRAM_NAME:
+            case META_SMPTE_OFFSET:
+            case META_TEXT:
+            case META_COPYRIGHT:
+                return type.toString() + ": " + bytesToText(message.getData());
+            case UNKNOWN:
+            default:
+                return type.toString() + ": " + message.getType() + " - Unknown meta type! (" + bytesToText(message.getData()) + ")";
+        }
     }
 }

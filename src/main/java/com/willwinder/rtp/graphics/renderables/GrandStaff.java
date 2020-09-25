@@ -161,122 +161,310 @@ public class GrandStaff implements Renderable {
      * @return
      */
     static private double getYOffsetForNote(int octave, Key.Note note, Cleff cleff, double staffHeight) {
-        double cleffMultiplierOffset = switch(cleff) {
-            case TREBLE -> 0.0;
-            case BASS   -> 0.162;
+        double cleffMultiplierOffset;
+        switch(cleff) {
+            case TREBLE:
+            default:
+                cleffMultiplierOffset = 0.0;
+                break;
+            case BASS:
+                cleffMultiplierOffset = 0.162;
+                break;
         };
 
         // I hate this, but the staff I built is not perfect so fine tuning the offset is required.
+        // Without switch expressions this became even worse!
         double octaveMultiplier = 0.0;
         if (octave == 8) {
-            octaveMultiplier = switch(note) {
-                case G, G_SHARP -> -0.381;
-                case F, F_SHARP -> -0.356;
-                case E          -> -0.331;
-                case D, D_SHARP -> -0.306;
-                case C, C_SHARP -> -0.281;
-                case B          -> -0.256;
-                case A, A_SHARP -> -0.231;
-            };
+            switch(note) {
+                case G:
+                case G_SHARP:
+                    octaveMultiplier = -0.381;
+                    break;
+                case F:
+                case F_SHARP:
+                    octaveMultiplier = -0.356;
+                    break;
+                case E:
+                    octaveMultiplier = -0.331;
+                    break;
+                case D:
+                case D_SHARP:
+                    octaveMultiplier = -0.306;
+                    break;
+                case C:
+                case C_SHARP:
+                    octaveMultiplier = -0.281;
+                    break;
+                case B:
+                    octaveMultiplier = -0.256;
+                    break;
+                case A:
+                case A_SHARP:
+                    octaveMultiplier = -0.231;
+                    break;
+            }
         }
         if (octave == 7) {
-            octaveMultiplier = switch (note) {
-                case G, G_SHARP -> -0.206;
-                case F, F_SHARP -> -0.181;
-                case E -> -0.156;
-                case D, D_SHARP -> -0.131;
-                case C, C_SHARP -> -0.106;
-                case B -> -0.081;
-                case A, A_SHARP -> -0.056;
-            };
+            switch (note) {
+                case G:
+                case G_SHARP:
+                    octaveMultiplier = -0.206;
+                    break;
+                case F:
+                case F_SHARP:
+                    octaveMultiplier = -0.181;
+                    break;
+                case E:
+                    octaveMultiplier = -0.156;
+                    break;
+                case D:
+                case D_SHARP:
+                    octaveMultiplier = -0.131;
+                    break;
+                case C:
+                case C_SHARP:
+                    octaveMultiplier = -0.106;
+                    break;
+                case B:
+                    octaveMultiplier = -0.081;
+                    break;
+                case A:
+                case A_SHARP:
+                    octaveMultiplier = -0.056;
+                    break;
+            }
         }
         if (octave == 6) {
-            octaveMultiplier = switch(note) {
-                case G, G_SHARP -> -0.031;
-                case F, F_SHARP -> -0.006;
-                case E          -> 0.019;
-                case D, D_SHARP -> 0.044;
-                case C, C_SHARP -> 0.069;
-                case B          -> 0.094;
-                case A, A_SHARP -> 0.119;
-            };
+            switch(note) {
+                case G:
+                case G_SHARP:
+                    octaveMultiplier = -0.031;
+                    break;
+                case F:
+                case F_SHARP:
+                    octaveMultiplier = -0.006;
+                    break;
+                case E:
+                    octaveMultiplier = 0.019;
+                    break;
+                case D:
+                case D_SHARP:
+                    octaveMultiplier = 0.044;
+                    break;
+                case C:
+                case C_SHARP:
+                    octaveMultiplier = 0.069;
+                    break;
+                case B:
+                    octaveMultiplier = 0.094;
+                    break;
+                case A:
+                case A_SHARP:
+                    octaveMultiplier = 0.119;
+                    break;
+            }
         }
         if (octave == 5) {
-            octaveMultiplier = switch(note) {
-                case G, G_SHARP -> 0.144;
-                case F, F_SHARP -> 0.169;
-                case E          -> 0.194;
-                case D, D_SHARP -> 0.22;
-                case C, C_SHARP -> 0.245;
-                case B          -> 0.27;
-                case A, A_SHARP -> 0.297;
-            };
+            switch(note) {
+                case G:
+                case G_SHARP:
+                    octaveMultiplier = 0.144;
+                    break;
+                case F:
+                case F_SHARP:
+                    octaveMultiplier = 0.169;
+                    break;
+                case E:
+                    octaveMultiplier = 0.194;
+                    break;
+                case D:
+                case D_SHARP:
+                    octaveMultiplier = 0.22;
+                    break;
+                case C:
+                case C_SHARP:
+                    octaveMultiplier = 0.245;
+                    break;
+                case B:
+                    octaveMultiplier = 0.27;
+                    break;
+                case A:
+                case A_SHARP:
+                    octaveMultiplier = 0.297;
+                    break;
+            }
         }
         if (octave == 4) {
-            octaveMultiplier = switch(note) {
-                case G, G_SHARP -> 0.325;
-                case F, F_SHARP -> 0.35;
-                case E          -> 0.375;
-                case D, D_SHARP -> 0.4;
-                case C, C_SHARP -> 0.425;
-                case B          -> 0.45;
-                case A, A_SHARP -> 0.475;
-            };
+            switch(note) {
+                case G:
+                case G_SHARP:
+                    octaveMultiplier = 0.325;
+                    break;
+                case F:
+                case F_SHARP:
+                    octaveMultiplier = 0.35;
+                    break;
+                case E:
+                    octaveMultiplier = 0.375;
+                    break;
+                case D:
+                case D_SHARP:
+                    octaveMultiplier = 0.4;
+                    break;
+                case C:
+                case C_SHARP:
+                    octaveMultiplier = 0.425;
+                    break;
+                case B:
+                    octaveMultiplier = 0.45;
+                    break;
+                case A:
+                case A_SHARP:
+                    octaveMultiplier = 0.475;
+                    break;
+            }
         }
         if (octave == 3) {
-            octaveMultiplier = switch(note) {
-                case G, G_SHARP -> 0.5;
-                case F, F_SHARP -> 0.525;
-                case E          -> 0.553;
-                case D, D_SHARP -> 0.578;
-                case C, C_SHARP -> 0.606;
-                case B          -> 0.631;
-                case A, A_SHARP -> 0.656;
-            };
+            switch(note) {
+                case G:
+                case G_SHARP:
+                    octaveMultiplier = 0.5;
+                    break;
+                case F:
+                case F_SHARP:
+                    octaveMultiplier = 0.525;
+                    break;
+                case E:
+                    octaveMultiplier = 0.553;
+                    break;
+                case D:
+                case D_SHARP:
+                    octaveMultiplier = 0.578;
+                    break;
+                case C:
+                case C_SHARP:
+                    octaveMultiplier = 0.606;
+                    break;
+                case B:
+                    octaveMultiplier = 0.631;
+                    break;
+                case A:
+                case A_SHARP:
+                    octaveMultiplier = 0.656;
+                    break;
+            }
         }
         if (octave == 2) {
-            octaveMultiplier = switch(note) {
-                case G, G_SHARP -> 0.681;
-                case F, F_SHARP -> 0.706;
-                case E          -> 0.731;
-                case D, D_SHARP -> 0.756;
-                case C, C_SHARP -> 0.781;
-                case B          -> 0.806;
-                case A, A_SHARP -> 0.831;
-            };
+            switch(note) {
+                case G:
+                case G_SHARP:
+                    octaveMultiplier = 0.681;
+                    break;
+                case F:
+                case F_SHARP:
+                    octaveMultiplier = 0.706;
+                    break;
+                case E:
+                    octaveMultiplier = 0.731;
+                    break;
+                case D:
+                case D_SHARP:
+                    octaveMultiplier = 0.756;
+                    break;
+                case C:
+                case C_SHARP:
+                    octaveMultiplier = 0.781;
+                    break;
+                case B:
+                    octaveMultiplier = 0.806;
+                    break;
+                case A:
+                case A_SHARP:
+                    octaveMultiplier = 0.831;
+                    break;
+            }
         }
         if (octave == 1) {
-            octaveMultiplier = switch(note) {
-                case G, G_SHARP -> 0.856;
-                case F, F_SHARP -> 0.881;
-                case E          -> 0.906;
-                case D, D_SHARP -> 0.931;
-                case C, C_SHARP -> 0.956;
-                case B          -> 0.981;
-                case A, A_SHARP -> 1.006;
-            };
+            switch(note) {
+                case G:
+                case G_SHARP:
+                    octaveMultiplier = 0.856;
+                    break;
+                case F:
+                case F_SHARP:
+                    octaveMultiplier = 0.881;
+                    break;
+                case E:
+                    octaveMultiplier = 0.906;
+                    break;
+                case D:
+                case D_SHARP:
+                    octaveMultiplier = 0.931;
+                    break;
+                case C:
+                case C_SHARP:
+                    octaveMultiplier = 0.956;
+                    break;
+                case B:
+                    octaveMultiplier = 0.981;
+                    break;
+                case A:
+                    case  A_SHARP:
+                    octaveMultiplier = 1.006;
+                    break;
+            }
         }
         if (octave == 0) {
-            octaveMultiplier = switch(note) {
-                case G, G_SHARP -> 1.031;
-                case F, F_SHARP -> 1.056;
-                case E          -> 1.081;
-                case D, D_SHARP -> 1.106;
-                case C, C_SHARP -> 1.131;
-                case B          -> 1.156;
-                case A, A_SHARP -> 1.181;
-            };
+            switch(note) {
+                case G:
+                case G_SHARP:
+                    octaveMultiplier = 1.031;
+                    break;
+                case F:
+                case F_SHARP:
+                    octaveMultiplier = 1.056;
+                    break;
+                case E:
+                    octaveMultiplier = 1.081;
+                    break;
+                case D:
+                case D_SHARP:
+                    octaveMultiplier = 1.106;
+                    break;
+                case C:
+                case C_SHARP:
+                    octaveMultiplier = 1.131;
+                    break;
+                case B:
+                    octaveMultiplier = 1.156;
+                    break;
+                case A:
+                case A_SHARP:
+                    octaveMultiplier = 1.181;
+                    break;
+            }
         }
         if (octave == -1) {
-            octaveMultiplier = switch(note) {
-                case G, G_SHARP -> 1.206;
-                case F, F_SHARP -> 1.231;
-                case E          -> 1.256;
-                case D, D_SHARP -> 1.281;
-                case C, C_SHARP -> 1.306;
-                case B          -> 1.331;
-                case A, A_SHARP -> 1.356;
-            };
+            switch(note) {
+                case G:
+                case G_SHARP:
+                    octaveMultiplier = 1.206;
+                    break;
+                case F: case  F_SHARP: octaveMultiplier = 1.231;
+                break;
+                case E: octaveMultiplier = 1.256;
+                break;
+                case D: case  D_SHARP: octaveMultiplier = 1.281;
+                break;
+                case C: case  C_SHARP: octaveMultiplier = 1.306;
+                break;
+                case B:
+                    octaveMultiplier = 1.331;
+                break;
+                case A: case A_SHARP: octaveMultiplier = 1.356;
+                break;
+            }
         }
 
         return staffHeight * (octaveMultiplier + cleffMultiplierOffset);
@@ -285,10 +473,15 @@ public class GrandStaff implements Renderable {
     static private Cleff getCleff(Key key) {
         if (key.octave < 4) return Cleff.BASS;
         if (key.octave > 4) return Cleff.TREBLE;
-        return switch (key.note) {
-            case A, A_SHARP, B, C, C_SHARP -> Cleff.BASS;
-            default -> Cleff.TREBLE;
-        };
+        switch (key.note) {
+            case A:
+            case A_SHARP:
+            case B:
+            case C: C_SHARP:
+                return Cleff.BASS;
+            default:
+                return Cleff.TREBLE;
+        }
     }
 
     // TODO: Convert to 'drawMeasure' and accept a series of notes so that a bar can be drawn over notes when necessary.
