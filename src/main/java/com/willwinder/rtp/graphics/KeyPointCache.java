@@ -2,6 +2,8 @@ package com.willwinder.rtp.graphics;
 
 import com.willwinder.rtp.model.Key;
 import com.willwinder.rtp.model.params.KeyPointCacheParams;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 
 import java.util.HashMap;
 
@@ -16,10 +18,10 @@ public class KeyPointCache {
     private int paramHashCache;
 
     // Computed values
-    private double whiteKeyHeight;
-    private double whiteKeyWidth;
-    private double blackKeyHeight;
-    private double blackKeyWidth;
+    private final DoubleProperty whiteKeyHeight = new SimpleDoubleProperty(0);
+    private final DoubleProperty whiteKeyWidth = new SimpleDoubleProperty(0);
+    private final DoubleProperty blackKeyHeight = new SimpleDoubleProperty(0);
+    private final DoubleProperty blackKeyWidth = new SimpleDoubleProperty(0);
 
     // Cache
     private final HashMap<Integer, KeyPointCache.KeyPoints> cache = new HashMap<>();
@@ -29,21 +31,41 @@ public class KeyPointCache {
         this.height = 0.0;
         this.width = 0.0;
         this.paramHashCache = 0;
+
+        blackKeyWidth.bind(whiteKeyWidth.multiply(params.blackKeyWidthRatio));
+        whiteKeyHeight.bind(whiteKeyWidth.multiply(params.whiteKeyHeightRatio));
+        blackKeyHeight.bind(whiteKeyHeight.multiply(params.blackKeyHeightRatio));
     }
 
     public double getBlackKeyHeight() {
-        return blackKeyHeight;
+        return blackKeyHeight.get();
     }
 
     public double getBlackKeyWidth() {
-        return blackKeyWidth;
+        return blackKeyWidth.get();
     }
 
     public double getWhiteKeyHeight() {
-        return whiteKeyHeight;
+        return whiteKeyHeight.get();
     }
 
     public double getWhiteKeyWidth() {
+        return whiteKeyWidth.get();
+    }
+
+    public DoubleProperty getBlackKeyHeightProperty() {
+        return blackKeyHeight;
+    }
+
+    public DoubleProperty getBlackKeyWidthProperty() {
+        return blackKeyWidth;
+    }
+
+    public DoubleProperty getWhiteKeyHeightProperty() {
+        return whiteKeyHeight;
+    }
+
+    public DoubleProperty getWhiteKeyWidthProperty() {
         return whiteKeyWidth;
     }
 
@@ -74,10 +96,7 @@ public class KeyPointCache {
             note = note.nextNote();
         }
 
-        whiteKeyWidth = (width - params.leftMargin.get() - params.rightMargin.get()) / (double) numWhiteKeys;
-        blackKeyWidth = whiteKeyWidth * params.blackKeyWidthRatio.get();
-        whiteKeyHeight = whiteKeyWidth * params.whiteKeyHeightRatio.get();
-        blackKeyHeight = whiteKeyHeight * params.blackKeyHeightRatio.get();
+        whiteKeyWidth.set((width - params.leftMargin.get() - params.rightMargin.get()) / (double) numWhiteKeys);
 
         note = Key.Note.noteForKey(params.firstKey.get());
         var xStep = getWhiteKeyWidth() / 2.0;

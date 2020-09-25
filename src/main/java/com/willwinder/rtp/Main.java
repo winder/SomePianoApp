@@ -46,6 +46,7 @@ public class Main extends Application {
         MainController mainController = new MainController(mainPane.graphicsContext, allParams, model, stage);
         AnimateRenderables animationTimer = new AnimateRenderables(mainController.updateTimelineTimeEvent, mainPane.graphicsContext, allParams);
 
+        // Bind properties
         mainPane.openMidiFileEvent.set(mainController.openMidiFileActionHandler);
         mainPane.playMidiFileEvent.set(mainController.playMidiFileActionHandler);
         mainPane.pauseMidiFileEvent.set(mainController.pauseMidiFileActionHandler);
@@ -98,7 +99,7 @@ public class Main extends Application {
         TimelineParams timelineParams = new TimelineParams(
                 playerNotes,
                 false,
-                Duration.ofSeconds(7),
+                Duration.ofSeconds(6),
                 keyPointCache);
         BPMParams bpmParams = new BPMParams(
                 100,
@@ -106,15 +107,21 @@ public class Main extends Application {
 
         GrandStaffParams staffParams = new GrandStaffParams(
                 80.0,
-                0.3,
+                0.7,
                 false,
-                4,
+                2,
                 false
         );
 
         ControllerParams controllerParams = new ControllerParams(
                 ControllerParams.Mode.FOLLOW,
                 ControllerParams.Hands.BOTH
+        );
+
+        AnimationParams animationParams = new AnimationParams(
+                true,
+                true,
+                true
         );
 
         AllParams params = new AllParams(
@@ -126,7 +133,8 @@ public class Main extends Application {
                 eventBus,
                 receiver,
                 receiver,
-                controllerParams);
+                controllerParams,
+                animationParams);
 
         return params;
     }

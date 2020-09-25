@@ -168,6 +168,6 @@ public class TimelineSparks implements Renderable {
                 xMin,
                 yMin,
                 Math.min(xMax - xMin, w),
-                Math.min(yMax - yMin, h - params.keyPointCache.getWhiteKeyHeight()));
+                Math.min(yMax - yMin, timelineHeight));
     }
 }

@@ -68,11 +68,20 @@ public class SettingsView extends Stage {
         KeyPointCacheParams keyPointCacheParams = allParams.keyPointCacheParams;
         BPMParams bpmParams = allParams.bpmParams;
         TimelineParams timelineParams = allParams.timelineParams;
+        AnimationParams animationParams = allParams.animationParams;
         return Form.of(
             Section.of(
                     Field.ofSingleSelectionType(ControllerParams.modeOptionsListProperty, allParams.controllerParams.mode)
                     .label("Play mode.")
             ).title("Settings"),
+            Section.of(
+                    Field.ofBooleanType(animationParams.showKeyboard)
+                        .label("Keyboard"),
+                    Field.ofBooleanType(animationParams.showTimeline)
+                            .label("Timeline"),
+                    Field.ofBooleanType(animationParams.showStaff)
+                            .label("Staff")
+            ).title("UI Components").collapse(true),
             Section.of(
                 Field.ofIntegerType(keyPointCacheParams.firstKey)
                     .label("First Key")
@@ -100,7 +109,7 @@ public class SettingsView extends Stage {
                 Field.ofDoubleType(keyPointCacheParams.padding)
                     .label("padding")
                     .labelDescription("Space between keys.")
-            ).title("Keyboard"),
+            ).title("Keyboard Settings").collapse(true),
             Section.of(
                 Field.ofIntegerType(bpmParams.bpm)
                     .label("BPM"),
@@ -108,8 +117,7 @@ public class SettingsView extends Stage {
                     .label("Timeline Duration Milliseconds"),
                 Field.ofBooleanType(timelineParams.out)
                     .label("Outgoing (realtime)")
-            ).title("Timeline")
-
+            ).title("Timeline").collapse(true)
         );
     }
 }

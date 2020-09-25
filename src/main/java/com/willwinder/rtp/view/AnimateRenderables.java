@@ -6,6 +6,7 @@ import com.willwinder.rtp.graphics.RenderableGroup;
 import com.willwinder.rtp.graphics.renderables.*;
 import com.willwinder.rtp.model.params.AllParams;
 import javafx.animation.AnimationTimer;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
@@ -30,6 +31,8 @@ public class AnimateRenderables extends AnimationTimer {
     ///////////////////////////
     private final List<Renderable> renderableList = new ArrayList<>();
 
+
+
     // For detecting a reset is required.
     private double w, h = 0.0;
     private int currentKeyPointHash = 0;
@@ -47,24 +50,24 @@ public class AnimateRenderables extends AnimationTimer {
     public AnimateRenderables(EventHandler<ActionEvent> updateTimelineTime, GraphicsContext gc, AllParams params) {
         this.updateTimelineTime = updateTimelineTime;
         this.gc = gc;
-        allParams = params;
+        this.allParams = params;
 
-        KeyboardView keyboardView = new KeyboardView(params.keyboardState, params.keyPointCache);
+        final KeyboardView keyboardView = new KeyboardView(params.keyboardState, params.keyPointCache);
 
-        TimelineBackground timelineBackground = new TimelineBackground(params.timelineParams);
-        TimelineSparks timelineSparks = new TimelineSparks(params.timelineParams, params.keyboardState);
+        final TimelineBackground timelineBackground = new TimelineBackground(params.timelineParams);
+        final TimelineSparks timelineSparks = new TimelineSparks(params.timelineParams, params.keyboardState);
 
-        GrandStaff grandStaff = new GrandStaff(params.timelineParams, params.grandStaffParams);
+        final GrandStaff grandStaff = new GrandStaff(params.timelineParams, params.grandStaffParams);
 
-        BPMLines bpm = new BPMLines(params.bpmParams);
+        final BPMLines bpm = new BPMLines(params.bpmParams);
 
-        RenderableGroup timeline = new RenderableGroup(
+        final RenderableGroup timeline = new RenderableGroup(
                 timelineBackground,
                 bpm,
                 timelineSparks,
                 grandStaff
         );
-        RenderableFps timelineFps = new RenderableFps(timeline, 40);
+        final RenderableFps timelineFps = new RenderableFps(timeline, 40);
 
         //////////////////////////
         // Register renderables //
@@ -88,6 +91,24 @@ public class AnimateRenderables extends AnimationTimer {
 
         // Register listeners
         params.eventBus.register(keyboardView);
+
+        this.allParams.animationParams.showKeyboard.addListener(getRenderableListener(keyboardView));
+        this.allParams.animationParams.showTimeline.addListener(getRenderableListener(timelineSparks, bpm));
+        this.allParams.animationParams.showStaff.addListener(getRenderableListener(grandStaff));
+    }
+
+    private ChangeListener<Boolean> getRenderableListener(Renderable ...renderables) {
+        return (observable, oldValue, newValue) -> {
+            if (newValue) {
+                for(var r : renderables) {
+                    addRenderable(r);
+                }
+            } else {
+                for(var r : renderables) {
+                    removeRenderable(r);
+                }
+            }
+        };
     }
 
     @Override
