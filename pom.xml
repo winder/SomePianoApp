@@ -13,13 +13,16 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>14</maven.compiler.release>
-        <javafx.version>14.0.2.1</javafx.version>
+        <maven.compiler.release>11</maven.compiler.release>
+        <javafx.version>15</javafx.version>
         <javafx.plugin.version>0.0.4</javafx.plugin.version>
         <client.plugin.version>0.1.31</client.plugin.version>
         <attach.version>4.0.8</attach.version>
-        <jserialcomm.version>2.6.2</jserialcomm.version>
-        <main.class>rtp/com.willwinder.rtp.Main</main.class>
+        <javafx.maven.plugin.version>0.0.4</javafx.maven.plugin.version>
+        <client.maven.plugin.version>0.1.32</client.maven.plugin.version>
+        <ikonli.version>11.5.0</ikonli.version>
+        <formsfx.version>11.3.2</formsfx.version>
+        <main.class>com.willwinder.rtp.Main</main.class>
     </properties>
 
     <dependencies>
@@ -44,6 +47,21 @@
             <artifactId>guava</artifactId>
             <version>29.0-jre</version>
         </dependency>
+        <dependency>
+          <groupId>org.kordamp.ikonli</groupId>
+          <artifactId>ikonli-javafx</artifactId>
+          <version>${ikonli.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.kordamp.ikonli</groupId>
+          <artifactId>ikonli-fontawesome-pack</artifactId>
+          <version>${ikonli.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>com.dlsc.formsfx</groupId>
+          <artifactId>formsfx-core</artifactId>
+          <version>${formsfx.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -52,41 +70,51 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
-                <configuration>
-                    <release>14</release>
-                    <compilerArgs>
-                      <arg>--enable-preview</arg>
-                    </compilerArgs>
-                </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>${javafx.plugin.version}</version>
+                <version>${javafx.maven.plugin.version}</version>
                 <configuration>
-                    <release>${maven.compiler.release}</release>
-                    <jlinkImageName>rtp</jlinkImageName>
-                    <launcher>launcher</launcher>
                     <mainClass>${main.class}</mainClass>
-                    <options>
-                      <option>--enable-preview</option>
-                    </options>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>run</id>
-                    </execution>
-                    <execution>
-                        <id>debug</id>
-                        <configuration>
-                            <options>
-                                <option>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000</option>
-                                <option>--enable-preview</option>
-                            </options>
-                        </configuration>
-                    </execution>
-                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.gluonhq</groupId>
+                <artifactId>client-maven-plugin</artifactId>
+                <version>${client.maven.plugin.version}</version>
+                <configuration>
+                     <target>${client.target}</target>
+                     <mainClass>${main.class}</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>desktop</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <client.target>host</client.target>
+            </properties>
+        </profile>
+        <profile>
+            <id>ios</id>
+            <properties>
+                <client.target>ios</client.target>
+            </properties>
+        </profile>
+        <profile>
+            <id>android</id>
+            <properties>
+                <client.target>android</client.target>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>
