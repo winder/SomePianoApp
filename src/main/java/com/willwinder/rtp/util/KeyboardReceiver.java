@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.willwinder.rtp.model.Key;
 import com.willwinder.rtp.model.KeyboardState;
 import com.willwinder.rtp.util.NoteEvent;
+import com.willwinder.rtp.view.NoiseMaker;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -17,9 +18,11 @@ import static com.willwinder.rtp.util.Util.midiMessageToKey;
  */
 public class KeyboardReceiver implements Receiver, KeyboardState {
     private final EventBus eventBus;
+    private final NoiseMaker noise;
 
-    public KeyboardReceiver(EventBus eventBus) {
+    public KeyboardReceiver(EventBus eventBus, NoiseMaker noise) {
         this.eventBus = eventBus;
+        this.noise = noise;
     }
 
     private final Map<Integer, Key> activeKeys = new HashMap<>();
@@ -29,6 +32,9 @@ public class KeyboardReceiver implements Receiver, KeyboardState {
         //System.out.println(midiMessageToString(message));
 
         midiMessageToKey(message).ifPresent(k -> {
+            var event = new NoteEvent(k, 99, System.currentTimeMillis());
+            noise.noteEvent(event);
+
             synchronized (activeKeys) {
                 if (k.isActive()) {
                     activeKeys.put(k.key, k);
@@ -36,7 +42,7 @@ public class KeyboardReceiver implements Receiver, KeyboardState {
                     activeKeys.remove(k.key);
                 }
             }
-            eventBus.post(new NoteEvent(k, 99, System.currentTimeMillis()));
+            eventBus.post(event);
         });
     }
 

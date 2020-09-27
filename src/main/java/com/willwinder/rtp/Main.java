@@ -11,6 +11,7 @@ import com.willwinder.rtp.util.KeyboardReceiver;
 import com.willwinder.rtp.view.AnimateRenderables;
 import com.willwinder.rtp.view.MainView;
 
+import com.willwinder.rtp.view.NoiseMaker;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -75,8 +76,9 @@ public class Main extends Application {
      * // TODO: This should involve saving/loading parameters from a file somehow.
      */
     private AllParams initializeAllParams() {
+        NoiseMaker nm = new NoiseMaker();
         EventBus eventBus = new EventBus();
-        KeyboardReceiver receiver = new KeyboardReceiver(eventBus);
+        KeyboardReceiver receiver = new KeyboardReceiver(eventBus, nm);
 
         KeyPointCacheParams keyPointCacheParams = new KeyPointCacheParams(
                 50.0,
