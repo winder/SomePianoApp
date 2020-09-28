@@ -55,7 +55,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew --info -PinstallerType=${{matrix.TYPE}} clean jpackage
-          tar -czvf ${{matrix.PACKAGE_NAME}} ./build/jpackage/${{matrix.ARTIFACT}}
+          cd build/jpackage && tar -czvf ${{matrix.PACKAGE_NAME}} ${{matrix.ARTIFACT}}
 
       - name: Upload
         id: upload-release-asset 
