@@ -39,11 +39,11 @@ jobs:
         include:
           - os: macos-latest
             TYPE: pkg
-            ARTIFACT: somepianoapp_*_deb
+            ARTIFACT: SomePianoApp.app
             PACKAGE_NAME: somepianoapp.pkg.tar.gz
           - os: ubuntu-latest
             TYPE: deb
-            ARTIFACT: SomePianoApp.app
+            ARTIFACT: somepianoapp_*_deb
             PACKAGE_NAME: somepianoapp.deb.tar.gz
     steps:
       - uses: actions/checkout@v2
