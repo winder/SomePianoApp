@@ -40,11 +40,11 @@ jobs:
           - os: macos-latest
             TYPE: pkg
             ARTIFACT: SomePianoApp.app
-            PACKAGE_NAME: somepianoapp.pkg.tar.gz
+            PACKAGE_NAME: SomePianoApp.MacOS.tar.gz
           - os: ubuntu-latest
             TYPE: deb
             ARTIFACT: somepianoapp_*.deb
-            PACKAGE_NAME: somepianoapp.deb.tar.gz
+            PACKAGE_NAME: SomePianoApp.Linux-deb.tar.gz
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
