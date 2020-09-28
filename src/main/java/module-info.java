@@ -8,6 +8,7 @@ module SomePianoApp {
     requires org.kordamp.ikonli.fontawesome;
     requires org.kordamp.ikonli.javafx;
     requires com.dlsc.formsfx;
+    requires jfugue;
 
     exports com.willwinder.rtp;
     exports com.willwinder.rtp.model;

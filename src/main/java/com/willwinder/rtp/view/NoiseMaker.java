@@ -4,12 +4,27 @@ import com.willwinder.rtp.util.NoteEvent;
 
 import javax.sound.midi.*;
 
+import org.jfugue.midi.MidiDictionary;
+import org.jfugue.player.Player;
+import org.jfugue.realtime.RealtimePlayer;
+import org.jfugue.theory.Note;
+
+
 public class NoiseMaker {
-    private Synthesizer synth;
+    RealtimePlayer player;
+
+    private javax.sound.midi.Synthesizer synth;
     private Instrument instruments[];
     private MidiChannel channel;
 
     public NoiseMaker() {
+        try {
+            player = new RealtimePlayer();
+            player.changeInstrument(101);
+        } catch (MidiUnavailableException e) {
+            e.printStackTrace();
+        }
+        /*
         try {
             this.synth = MidiSystem.getSynthesizer();
             synth.open();
@@ -23,16 +38,22 @@ public class NoiseMaker {
         } catch (MidiUnavailableException e) {
             e.printStackTrace();
         }
+         */
     }
 
     //public void noteEvent(NoteEvent e) {
     //@Subscribe
     synchronized public void noteEvent(NoteEvent event) {
-        if (channel == null) return;
+        //System.out.println("Synth latency: " + this.synth.getLatency());
+        //if (channel == null) return;
+        Note n = new Note(event.key.key);
         if (event.key.isActive()) {
-            channel.noteOn(event.key.key, event.key.velocity);
+            //n.setOnVelocity(event.key.velocity);
+            player.startNote(n);
+            //channel.noteOn(event.key.key, event.key.velocity);
         } else {
-            channel.noteOff(event.key.key, event.key.velocity);
+            player.stopNote(n);
+            //channel.noteOff(event.key.key, event.key.velocity);
         }
     }
 }
