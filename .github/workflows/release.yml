@@ -43,7 +43,7 @@ jobs:
             PACKAGE_NAME: somepianoapp.pkg.tar.gz
           - os: ubuntu-latest
             TYPE: deb
-            ARTIFACT: somepianoapp_*_deb
+            ARTIFACT: somepianoapp_*.deb
             PACKAGE_NAME: somepianoapp.deb.tar.gz
     steps:
       - uses: actions/checkout@v2
