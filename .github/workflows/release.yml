@@ -39,9 +39,11 @@ jobs:
         include:
           - os: macos-latest
             TYPE: pkg
+            ARTIFACT: somepianoapp_*_deb
             PACKAGE_NAME: somepianoapp.pkg.tar.gz
           - os: ubuntu-latest
             TYPE: deb
+            ARTIFACT: SomePianoApp.app
             PACKAGE_NAME: somepianoapp.deb.tar.gz
     steps:
       - uses: actions/checkout@v2
@@ -53,7 +55,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew --info -PinstallerType=${{matrix.TYPE}} clean jpackage
-          tar -czvf ${{matrix.PACKAGE_NAME}} ./build/jpackage/somepianoapp*
+          tar -czvf ${{matrix.PACKAGE_NAME}} ./build/jpackage/${{matrix.ARTIFACT}}
 
       - name: Upload
         id: upload-release-asset 
