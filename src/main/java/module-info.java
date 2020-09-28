@@ -1,7 +1,10 @@
-module rtp {
+module SomePianoApp {
     requires javafx.controls;
     requires java.desktop;
+
+    // Not modular
     requires com.google.common;
+
     requires org.kordamp.ikonli.fontawesome;
     requires org.kordamp.ikonli.javafx;
     requires com.dlsc.formsfx;

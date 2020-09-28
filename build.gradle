@@ -5,6 +5,21 @@ plugins {
     id 'org.beryx.jlink' version '2.21.3'
 }
 
+group 'com.winder'
+version '1.0.0'
+
+ext {
+  moduleName = 'SomePianoApp'
+  javaMainClass = 'com.willwinder.rtp.Main'
+
+  appModuleName = moduleName
+  appImageName = moduleName
+  appInstallerName = moduleName
+
+  platform=getOsName()
+  javafxversion=15
+}
+
 // Workaround for gradle 6.6.1 issue
 // https://github.com/java9-modularity/gradle-modules-plugin/issues/165#issuecomment-677736059
 modularity.disableEffectiveArgumentsAdjustment()
@@ -12,13 +27,27 @@ modularity.disableEffectiveArgumentsAdjustment()
 repositories {
     jcenter()
     mavenCentral()
+    // For JSyn
+    maven { url "https://clojars.org/repo" }
 }
 
-sourceCompatibility = "11"
-targetCompatibility = "11"
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+application {
+    mainModule = moduleName // name defined in module-info.java
+    mainClass = javaMainClass
+    mainClassName = javaMainClass
+}
+
+javafx {
+    version = javafxversion
+    modules = ['javafx.controls', 'javafx.fxml']
+}
 
 dependencies {
     compile 'com.google.guava:guava:29.0-jre'
+    compile 'com.jsyn:jsyn:20170815'
 
     compile 'org.apache.logging.log4j:log4j-core:2.13.1'
     compile 'org.apache.logging.log4j:log4j-api:2.13.1'
@@ -28,23 +57,19 @@ dependencies {
     compile 'org.kordamp.ikonli:ikonli-javafx:11.5.0'
     compile 'org.kordamp.ikonli:ikonli-fontawesome-pack:11.5.0'
 
-
-
     compile 'com.dlsc.formsfx:formsfx-core:11.3.2'
     // Preferences
     //compile 'com.dlsc.preferencesfx:preferencesfx-core:11.6.0'
     //compile 'de.jensd:fontawesomefx-commons:11.0'
     //compile 'de.jensd:fontawesomefx-fontawesome:4.7.0-11'
+
 }
 
-application {
-    mainClassName = "com.willwinder.rtp.Main"
-    mainModule = "com.willwinder.rtp"
-}
-
-javafx {
-    version = 14
-    modules = ['javafx.controls', 'javafx.fxml']
+// throws exception if its missing
+jpackage {
+    doFirst {
+        project.getProperty('installerType') 
+    }
 }
 
 /*
@@ -55,11 +80,79 @@ jlink {
     launcher {
         name = 'rtp'
     }
+
     forceMerge('log4j-api')
+
     jpackage {
-        if (org.gradle.internal.os.OperatingSystem.current().windows) {
-            installerOptions += ['--win-per-user-install', '--win-dir-chooser', '--win-menu', '--win-shortcut']
+        installerOptions = [
+                '--description', '"Show Case for Spring Boot, Java FX, Gradle and badass-jlink-plugin"',
+                '--copyright', '"Copyright 2015-2019 Example GmbH (c)2020"',
+                '--vendor', '"COM Example, Example Street 1, CH-xxxx Example"',
+        ]
+        imageOptions = []
+        appVersion = version
+        imageName = project.findProperty('appImageName')
+        installerName = project.findProperty('appInstallerName')
+        installerType = project.findProperty('installerType')
+        // image Options resourceDir:null,targetPlatformName:null,
+
+        if (installerType in ['pkg', 'dmg', 'msi', 'exe', 'deb', 'rpm']) {
+            println()
+            println("************************* Building an installer with JPackage installerType=$installerType ********************************** ")
+            println("appVersion=$appVersion, appImageName=$appImageName, appInstallerName=$appInstallerName, appModuleName=$appModuleName")
+        }
+        if (installerType in ['msi', 'exe']) {
+            println('***** Build Windows  ****** ')
+            installerOptions += [
+                    //'--resource-dir', "src/main/resources/setup/win/win-setup-resources",
+                    '--win-upgrade-uuid', '8d320b5b-5579-493d-84e3-030d0e66e11d',
+                    // '--win-per-user-install', // without -> install path to C:\Program Files\SpringBootJavaFx
+                    '--win-dir-chooser',
+                    '--win-menu',
+                    '--win-shortcut',
+                    '--win-menu-group',"$appImageName",
+                    // '--temp', "$buildDir/installer",
+            ]
+            //imageOptions += ['--icon', 'src/main/resources/setup/win/SpringBootJavaFx.ico']
+        }
+        if (installerType in ['pkg', 'dmg']) {
+            println('***** Build Mac  ****** ')
+            //installerOptions += ['--resource-dir', 'src/main/resources/setup/mac/mac-setup-resources']
+            //imageOptions += ['--icon', 'src/main/resources/setup/mac/launcher.icns']
+        }
+        if (installerType in ['deb', 'rpm']) {
+            println('***** Build Linux with  ****** ')
+            //imageOptions += ['--icon', 'src/main/resources/setup/linux/icon_256x256.png']
+            installerOptions += [
+                    '--linux-menu-group', 'Office',
+                    '--linux-shortcut'
+            ]
+        }
+        if (installerType == 'deb') {
+            //installerOptions += ['--resource-dir', 'src/main/resources/setup/linux/linux-deb-setup-resources']
+            installerOptions += [
+                    '--linux-deb-maintainer', 'example@example.com'
+            ]
+        }
+        if (installerType == 'rpm') {
+            //installerOptions += ['--resource-dir', 'src/main/resources/setup/linux/linux-rpm-setup-resources']
+            installerOptions += [
+                    '--linux-rpm-license-type', 'GPLv3'
+            ]
         }
     }
+}
+
+static def getOsName() {
+    final String osName = System.getProperty("os.name").toLowerCase()
+
+    if (osName.contains("linux")) {
+        return ("linux")
+    } else if (osName.contains("mac os x") || osName.contains("darwin") || osName.contains("osx")) {
+        return ("mac")
+    } else if (osName.contains("windows")) {
+        return ("win")
+    }
+    return ("linux")
 }
 
