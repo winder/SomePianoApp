@@ -1,3 +1,8 @@
+# Publishing artifacts from a build matrix isn't totally supported.
+# This uses a trick shared on github:
+#       https://github.com/actions/create-release/issues/14#issuecomment-653974075
+# There are several other options discussed in the o pen issue:
+#       https://github.com/actions/create-release/issues/14
 on:
   push:
     # Sequence of patterns matched against refs/tags
@@ -7,9 +12,32 @@ on:
 name: Create Release
 
 jobs:
+  create_release:
+    name: Create Release
+    id: create_release
+    uses: actions/create-release@v1
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      tag_name: ${{ github.ref }}
+      release_name: Release ${{ github.ref }}
+      draft: false
+      prerelease: false
+
   build:
     name: Create Release
-    runs-on: ubuntu-latest
+    needs: create_release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+      include:
+        - os: macos-latest
+          TYPE: pkg
+          PACKAGE_NAME: somepianoapp.pkg.tar.gz
+        - os: ubuntu-latest
+          TYPE: deb
+          PACKAGE_NAME: somepianoapp.deb.tar.gz
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
@@ -19,26 +47,18 @@ jobs:
           architecture: x64
       - name: Build
         run: |
-          ./gradlew --info -PinstallerType=deb clean jpackage
-          tar -czvf somepianoapp.deb.tar.gz ./build/jpackage/somepianoapp*deb
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Upload Release Asset
+          ./gradlew --info -PinstallerType=${{matrix.TYPE}} clean jpackage
+          tar -czvf ${{matrix.PACKAGE_NAME}} ./build/jpackage/somepianoapp*
+
+      - name: Upload
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./somepianoapp.deb.tar.gz
-          asset_name: somepianoapp.deb.tar.gz
+          # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./somepianoapp.${{ matrix.PACKAGE_NAME }}.tar.gz
+          asset_name: somepianoapp.${{ matrix.PACKAGE_NAME }}.tar.gz
           asset_content_type: application/gzip
 
