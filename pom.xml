@@ -22,8 +22,17 @@
         <client.maven.plugin.version>0.1.32</client.maven.plugin.version>
         <ikonli.version>11.5.0</ikonli.version>
         <formsfx.version>11.3.2</formsfx.version>
+        <jfugue.version>5.0.9</jfugue.version>
         <main.class>com.willwinder.rtp.Main</main.class>
     </properties>
+
+    <repositories>
+      <!-- for jfugue -->
+      <repository>
+        <id>jfugue</id>
+        <url>https://maven.sing-group.org/repository/maven/</url>
+      </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -61,6 +70,11 @@
           <groupId>com.dlsc.formsfx</groupId>
           <artifactId>formsfx-core</artifactId>
           <version>${formsfx.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>jfugue</groupId>
+          <artifactId>jfugue</artifactId>
+          <version>${jfugue.version}</version>
         </dependency>
     </dependencies>
 

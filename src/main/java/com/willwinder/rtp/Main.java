@@ -76,7 +76,7 @@ public class Main extends Application {
      * // TODO: This should involve saving/loading parameters from a file somehow.
      */
     private AllParams initializeAllParams() {
-        NoiseMaker nm = new NoiseMaker();
+        NoiseMaker nm = new NoiseMaker(NoiseMaker.Mode.JFUGUE);
         EventBus eventBus = new EventBus();
         KeyboardReceiver receiver = new KeyboardReceiver(eventBus, nm);
 
